@@ -10,9 +10,9 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --gold: #C9A96E; /* warm gold matching logo */
+    --gold: #C9A96E;
     --gold-light: #D7B67E;
-    --bg: #0F0D0A; /* warm dark brown */
+    --bg: #0F0D0A;
     --bg-card: #16130F;
     --bg-hover: #1C1813;
     --text: #E8E8E8;
@@ -20,7 +20,6 @@
     --border: rgba(201,169,110,0.12);
     --success: #4A7A5A;
     --error: #8A3A3A;
-    --glass: rgba(255,255,255,0.02);
   }
 
   body {
@@ -30,8 +29,7 @@
     min-height: 100vh;
     font-weight: 300;
     -webkit-font-smoothing: antialiased;
-    background-image: radial-gradient(ellipse at 50% 30%, rgba(120,80,30,0.08), transparent 70%), radial-gradient(rgba(201,169,110,0.015) 1px, transparent 1px);
-    background-size: 10px 10px, 100% 100%;
+    background-image: radial-gradient(ellipse at 50% 30%, rgba(120,80,30,0.08), transparent 70%);
   }
 
   .container {
@@ -43,85 +41,32 @@
     flex-direction: column;
   }
 
-  /* subtle wave divider */
-  .wave {
-    width: 100%; max-width: 240px; margin: 18px auto 0; opacity:0.6;
-  }
+  .wave { width: 100%; max-width: 240px; margin: 18px auto 0; opacity:0.6; }
 
   /* ── Landing ── */
   .landing {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    gap: 24px;
-    padding-top: 40px;
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; gap: 24px; padding-top: 40px;
     transition: opacity 300ms ease, transform 300ms ease;
   }
 
-  .logo-section h1 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 3.2rem;
-    font-weight: 300;
-    color: var(--gold);
-    letter-spacing: 0.15em;
-    line-height: 1.1;
-    text-transform: uppercase;
-  }
-
-  .logo-section .subtitle {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1rem;
-    color: var(--text-dim);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-top: 6px;
-  }
-
-  .logo-section .tagline {
-    margin-top: 10px; color: #cfc6b8; font-size: 0.95rem; opacity:0.95; font-weight:300; letter-spacing:0.02em;
-  }
-
-  .logo-section .divider {
-    width: 60px;
-    height: 1px;
-    background: linear-gradient(90deg, rgba(181,143,85,0.9), rgba(181,143,85,0.2));
-    margin: 14px auto;
-    opacity: 0.9;
-  }
-
-  .logo-section .address {
-    font-size: 0.8rem;
-    color: var(--text-dim);
-    line-height: 1.6;
-  }
+  .logo-section h1 { font-family: 'Cormorant Garamond', serif; font-size: 3.2rem; font-weight: 300; color: var(--gold); letter-spacing: 0.15em; line-height: 1.1; text-transform: uppercase; }
+  .logo-section .subtitle { font-family: 'Cormorant Garamond', serif; font-size: 1rem; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 6px; }
+  .logo-section .tagline { margin-top: 10px; color: #cfc6b8; font-size: 0.95rem; opacity:0.95; font-weight:300; letter-spacing:0.02em; }
+  .logo-section .divider { width: 60px; height: 1px; background: linear-gradient(90deg, rgba(181,143,85,0.9), rgba(181,143,85,0.2)); margin: 14px auto; }
+  .logo-section .address { font-size: 0.8rem; color: var(--text-dim); line-height: 1.6; }
 
   /* buttons */
   .btn {
-    display: block;
-    width: 100%;
-    padding: 12px 28px;
-    border: 1px solid rgba(181,143,85,0.9);
-    background: transparent;
-    color: var(--gold);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 400;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 220ms ease;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 8px;
-    backdrop-filter: blur(6px);
+    display: block; width: 100%; padding: 12px 28px;
+    border: 1px solid rgba(181,143,85,0.9); background: transparent; color: var(--gold);
+    font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 400;
+    letter-spacing: 0.18em; text-transform: uppercase; cursor: pointer;
+    transition: all 220ms ease; text-align: center; text-decoration: none;
+    border-radius: 8px; backdrop-filter: blur(6px);
   }
-
-  .btn.primary { background: transparent; color: var(--gold); padding: 10px 26px; border-width:1px; }
+  .btn.primary { background: transparent; color: var(--gold); padding: 10px 26px; }
   .btn.primary:hover { background: rgba(181,143,85,0.06); color: var(--gold-light); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(11,11,11,0.5); }
-  .btn:hover { opacity:0.95; }
   .btn:disabled { opacity: 0.35; cursor: not-allowed; transform:none; }
 
   .landing-buttons { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 12px; }
@@ -131,151 +76,168 @@
   .step.active { display: flex; opacity:1; transform:none; }
 
   .step-header { display: flex; align-items: center; gap: 12px; }
-
   .back-btn { background: none; border: none; color: var(--text-dim); font-size: 1.2rem; cursor: pointer; padding: 6px 8px; }
-
   .step-title { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: var(--gold); font-weight: 400; }
+
+  /* ── Progress Bar ── */
+  .progress-bar { display: flex; gap: 6px; margin-bottom: 4px; }
+  .progress-bar .dot { flex:1; height: 3px; border-radius: 2px; background: rgba(201,169,110,0.15); transition: background 300ms ease; }
+  .progress-bar .dot.done { background: var(--gold); }
+  .progress-bar .dot.current { background: rgba(201,169,110,0.5); }
 
   /* ── Date Picker ── */
   .date-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 8px 2px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
   .date-scroll::-webkit-scrollbar { display: none; }
 
   .date-item {
-    flex-shrink: 0;
-    width: 68px;
-    padding: 12px 10px;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    text-align: center;
-    cursor: pointer;
-    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    flex-shrink: 0; width: 68px; padding: 12px 10px;
+    border: 1px solid var(--border); border-radius: 12px; text-align: center;
+    cursor: pointer; transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
     background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
     box-shadow: 0 2px 8px rgba(0,0,0,0.4);
   }
-
   .date-item:hover { transform: translateY(-4px); border-color: rgba(181,143,85,0.9); }
   .date-item.selected { border-color: rgba(181,143,85,0.95); background: linear-gradient(180deg, rgba(181,143,85,0.06), rgba(0,0,0,0.0)); }
   .date-item.blocked { opacity: 0.32; cursor: not-allowed; }
-
   .date-item .day-name { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
   .date-item .day-num { font-size: 1.3rem; margin: 6px 0; color: var(--text); font-weight: 400; }
   .date-item .month { font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; }
   .date-item.selected .day-num { color: var(--gold); }
 
-  /* ── Party Size (circle) ── */
+  /* ── Party Size ── */
   .pax-selector { display: flex; gap: 8px; flex-wrap: wrap; }
-
   .pax-item {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid var(--border);
-    border-radius: 50%;
-    cursor: pointer;
-    transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
-    font-size: 0.95rem;
-    background: var(--bg-card);
-    box-shadow: inset 0 -2px 6px rgba(0,0,0,0.6);
+    width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--border); border-radius: 50%; cursor: pointer;
+    transition: transform 160ms ease, background 160ms ease; font-size: 0.95rem;
+    background: var(--bg-card); box-shadow: inset 0 -2px 6px rgba(0,0,0,0.6);
   }
-
   .pax-item:hover { transform: translateY(-3px); border-color: rgba(181,143,85,0.9); }
-  .pax-item.selected { border-color: rgba(181,143,85,0.95); background: linear-gradient(180deg, rgba(181,143,85,0.06), rgba(0,0,0,0)); color: var(--gold); box-shadow: 0 8px 20px rgba(11,11,11,0.6); }
+  .pax-item.selected { border-color: rgba(181,143,85,0.95); background: linear-gradient(180deg, rgba(181,143,85,0.06), rgba(0,0,0,0)); color: var(--gold); }
 
   /* ── Sessions ── */
   .session-list { display: flex; flex-direction: column; gap: 12px; }
-
   .session-card {
-    padding: 14px 16px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    cursor: pointer;
-    transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    padding: 14px 16px; border: 1px solid var(--border); border-radius: 10px;
+    cursor: pointer; transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
     background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
     display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden;
   }
-
-  .session-card::after {
-    content: '';
-    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-    width: 26px; height: 26px; border-radius: 50%; border: 1px solid rgba(181,143,85,0.12); box-shadow: inset 0 0 8px rgba(181,143,85,0.02);
-  }
-
   .session-card:hover:not(.full) { border-color: rgba(181,143,85,0.95); transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
   .session-card.selected { border-color: rgba(181,143,85,0.95); background: rgba(181,143,85,0.04); }
   .session-card.full { opacity: 0.46; }
-
   .session-info h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; font-weight: 400; margin-bottom: 4px; }
   .session-info .time { font-size: 0.8rem; color: var(--text-dim); }
   .session-meta { text-align: right; }
   .session-meta .price { color: var(--gold); font-size: 0.9rem; }
-  .session-meta .seats { font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; }
-  .session-meta .seats.low { color: #C97A4E; }
   .session-meta .waitlist-tag { font-size: 0.68rem; color: var(--error); border: 1px solid var(--error); padding: 4px 8px; border-radius: 6px; }
 
-  /* ── Course selection: compact chips (course cards are created with .session-card in JS; restyle within #courseList) ── */
-  #courseList .session-card { display: inline-flex; padding: 8px 12px; border-radius: 999px; margin-right: 8px; margin-bottom: 8px; align-items: center; gap:12px; }
-  #courseList .session-card .session-info h3 { font-size: 0.9rem; }
-  #courseList .session-card .session-meta { text-align: right; min-width:54px; }
-
-  /* when JS renders a vertical options container, make it wrap nicely */
+  /* ── Course chips ── */
   #courseList { display:flex; flex-direction:column; gap:12px; }
-  #courseList div[style] { /* rows created by JS */ display:block; }
-
-  /* Make the chips look tactile */
+  #courseList .session-card { display: flex; padding: 12px 14px; border-radius: 10px; align-items: center; gap:12px; }
+  #courseList .session-card .session-info h3 { font-size: 0.9rem; }
   #courseList .session-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
   #courseList .session-card.selected { background: linear-gradient(90deg, rgba(181,143,85,0.07), rgba(0,0,0,0.02)); color: var(--gold); border-color: rgba(181,143,85,0.9); }
 
-  /* ── Form (refined inputs) ── */
+  /* ── Form ── */
   .form-group { display: flex; flex-direction: column; gap: 6px; }
   .form-group label { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; }
-
   .form-group input, .form-group textarea {
     background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px 14px;
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 300;
-    outline: none;
-    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    border: 1px solid var(--border); border-radius: 8px; padding: 14px;
+    color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 300;
+    outline: none; transition: border-color 0.18s ease, box-shadow 0.18s ease;
   }
-
   .form-group input:focus, .form-group textarea:focus { border-color: rgba(181,143,85,0.95); box-shadow: 0 8px 24px rgba(11,11,11,0.6); }
   .form-group textarea { resize: vertical; min-height: 88px; }
-
-  /* floating-placeholder hint (use placeholder text lightly) */
   .form-group input::placeholder, .form-group textarea::placeholder { color: rgba(255,255,255,0.22); }
 
-  /* ── Confirmation ── */
-  .confirmation { text-align: center; padding: 30px 0; animation: fadeIn 420ms ease both; }
-  @keyframes fadeIn { from { opacity:0; transform: translateY(6px);} to { opacity:1; transform:none; } }
-
-  .confirmation .check {
-    width: 70px; height: 70px; border: 2px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; font-size: 1.6rem; color: var(--gold);
-    box-shadow: 0 12px 36px rgba(11,11,11,0.6);
+  /* ── Payment Step ── */
+  .payment-summary {
+    background: linear-gradient(180deg, rgba(255,255,255,0.015), transparent);
+    border: 1px solid var(--border); border-radius: 12px; padding: 20px;
   }
+  .payment-summary .summary-title {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: var(--gold);
+    margin-bottom: 14px; font-weight: 400;
+  }
+  .payment-summary .row { display:flex; justify-content:space-between; padding:7px 0; font-size: 0.85rem; }
+  .payment-summary .row .label { color: var(--text-dim); }
+  .payment-summary .row.total { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 12px; }
+  .payment-summary .row.total .label, .payment-summary .row.total span:last-child { color: var(--gold); font-weight: 500; font-size: 0.95rem; }
 
-  .confirmation h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--gold); font-weight: 400; margin-bottom: 6px; }
-  .confirmation .status-msg { color: var(--text-dim); margin-bottom: 18px; font-size: 0.95rem; }
+  .card-section { margin-top: 24px; }
+  .card-section .section-label { margin-bottom: 12px; }
 
-  .booking-summary { background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: left; margin-bottom: 18px; }
-  .booking-summary .row { display:flex; justify-content:space-between; padding:8px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-  .booking-summary .row:last-child { border: none; }
-  .booking-summary .row .label { color: var(--text-dim); }
+  .card-element-wrapper {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+    border: 1px solid var(--border); border-radius: 10px; padding: 16px;
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+  }
+  .card-element-wrapper.focused { border-color: rgba(181,143,85,0.6); box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+
+  .hold-notice {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: rgba(201,169,110,0.04); border: 1px solid rgba(201,169,110,0.08);
+    border-radius: 8px; padding: 12px 14px; margin-top: 16px;
+  }
+  .hold-notice .icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+  .hold-notice .text { font-size: 0.78rem; color: var(--text-dim); line-height: 1.5; }
+  .hold-notice .text strong { color: var(--text); font-weight: 400; }
+
+  .secure-badge { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 16px; font-size: 0.7rem; color: var(--text-dim); letter-spacing: 0.05em; }
+  .secure-badge svg { width: 12px; height: 12px; }
+
+  /* ── Success Page ── */
+  .success-page { text-align: center; padding: 50px 0 30px; animation: fadeIn 500ms ease both; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(10px);} to { opacity:1; transform:none; } }
+
+  .success-icon {
+    width: 80px; height: 80px; margin: 0 auto 24px;
+    border: 2px solid var(--gold); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle, rgba(201,169,110,0.06), transparent);
+    box-shadow: 0 0 40px rgba(201,169,110,0.08);
+    animation: scaleIn 400ms 200ms ease both;
+  }
+  @keyframes scaleIn { from { transform: scale(0.6); opacity:0; } to { transform: scale(1); opacity:1; } }
+  .success-icon svg { width: 32px; height: 32px; }
+
+  .success-page h2 {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.8rem;
+    color: var(--gold); font-weight: 300; margin-bottom: 8px; letter-spacing: 0.05em;
+  }
+  .success-page .success-sub { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 28px; line-height: 1.6; }
+
+  .success-details {
+    background: linear-gradient(180deg, rgba(255,255,255,0.015), transparent);
+    border: 1px solid var(--border); border-radius: 12px; padding: 20px;
+    text-align: left; margin-bottom: 24px;
+  }
+  .success-details .detail-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 10px 0; border-bottom: 1px solid rgba(201,169,110,0.06); font-size: 0.85rem;
+  }
+  .success-details .detail-row:last-child { border-bottom: none; }
+  .success-details .detail-row .label { color: var(--text-dim); min-width: 90px; }
+  .success-details .detail-row .value { text-align: right; color: var(--text); }
+
+  .success-note {
+    background: rgba(74,122,90,0.08); border: 1px solid rgba(74,122,90,0.15);
+    border-radius: 8px; padding: 14px 16px; margin-bottom: 20px;
+    font-size: 0.8rem; color: var(--text-dim); line-height: 1.6; text-align: left;
+  }
+  .success-note strong { color: var(--text); font-weight: 400; }
+
+  .success-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
 
   .loading { text-align: center; padding: 28px; color: var(--text-dim); position:relative; }
   .loading:before { content:''; display:inline-block; width:18px; height:18px; border-radius:50%; border:3px solid rgba(181,143,85,0.15); border-top-color: var(--gold); animation: spin 900ms linear infinite; margin-right:10px; vertical-align:middle; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   .error-msg { color: #C97A4E; font-size: 0.9rem; text-align: center; padding: 8px; }
-
   .section-label { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; }
 
-  /* small screens adjustments */
   @media (max-width:480px) {
     .container { padding: 18px; }
     .logo-section h1 { font-size: 3rem; }
@@ -305,18 +267,18 @@
 
   <!-- Step 1: Date -->
   <div class="step" id="step1">
+    <div class="progress-bar"><div class="dot current"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
     <div class="step-header">
       <button class="back-btn" onclick="goLanding()">←</button>
       <span class="step-title">Select Date</span>
     </div>
-
     <div class="date-scroll" id="dateScroll"></div>
-
     <button class="btn primary" id="step1Next" disabled onclick="goStep2()">Continue</button>
   </div>
 
-  <!-- Step 2: Session (time) -->
+  <!-- Step 2: Session -->
   <div class="step" id="step2">
+    <div class="progress-bar"><div class="dot done"></div><div class="dot current"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
     <div class="step-header">
       <button class="back-btn" onclick="goStep1()">←</button>
       <span class="step-title">Select Session</span>
@@ -329,29 +291,27 @@
 
   <!-- Step 2b: Party Size + Course -->
   <div class="step" id="step2b">
+    <div class="progress-bar"><div class="dot done"></div><div class="dot done"></div><div class="dot current"></div><div class="dot"></div><div class="dot"></div></div>
     <div class="step-header">
       <button class="back-btn" onclick="goStep2()">←</button>
       <span class="step-title">Party Size & Menu</span>
     </div>
-
     <div class="section-label">Party Size</div>
     <div class="pax-selector" id="paxSelector"></div>
-
     <div id="courseSection" style="display:none">
       <div class="section-label" style="margin-top:20px">Select Course for Each Guest</div>
       <div id="courseList"></div>
     </div>
-
     <button class="btn primary" id="step2bNext" disabled onclick="goStep3()">Continue</button>
   </div>
 
   <!-- Step 3: Details -->
   <div class="step" id="step3">
+    <div class="progress-bar"><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot current"></div><div class="dot"></div></div>
     <div class="step-header">
       <button class="back-btn" onclick="goStep2b()">←</button>
       <span class="step-title">Your Details</span>
     </div>
-
     <div class="form-group">
       <label>Name *</label>
       <input type="text" id="guestName" placeholder="Full name" required>
@@ -368,16 +328,69 @@
       <label>Special Requests</label>
       <textarea id="guestNotes" placeholder="Allergies, celebrations, dietary requirements..."></textarea>
     </div>
-
     <div id="formError" class="error-msg" style="display:none"></div>
-    <button class="btn primary" id="submitBtn" onclick="submitReservation()">Confirm Reservation</button>
+    <button class="btn primary" id="step3Next" onclick="goStep4()">Continue to Payment</button>
   </div>
 
-  <!-- Step 4: Confirmation -->
+  <!-- Step 4: Payment -->
   <div class="step" id="step4">
-    <div class="confirmation" id="confirmationContent"></div>
-    <button class="btn" onclick="goLanding()">Done</button>
+    <div class="progress-bar"><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot current"></div></div>
+    <div class="step-header">
+      <button class="back-btn" onclick="goStep3()">←</button>
+      <span class="step-title">Payment</span>
+    </div>
+
+    <div class="payment-summary" id="paymentSummary"></div>
+
+    <div class="card-section">
+      <div class="section-label">Card Details</div>
+      <div class="card-element-wrapper" id="cardWrapper">
+        <div id="card-element"></div>
+      </div>
+      <div id="cardError" class="error-msg" style="display:none"></div>
+
+      <div class="hold-notice">
+        <span class="icon">🔒</span>
+        <div class="text">
+          A <strong>temporary hold of RM <span id="holdAmount">100</span></strong> will be placed on your card to secure your reservation. This is <strong>not a charge</strong> — it will be automatically released if not captured within 48 hours.
+        </div>
+      </div>
+
+      <div class="secure-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Secured by Stripe · 256-bit encryption
+      </div>
+    </div>
+
+    <button class="btn primary" id="payBtn" onclick="processPayment()" style="margin-top:20px">Authorize & Confirm</button>
   </div>
+
+  <!-- Step 5: Success -->
+  <div class="step" id="step5">
+    <div class="success-page">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h2>Reservation Confirmed</h2>
+      <p class="success-sub" id="successSub">Thank you for choosing Mizu Omakase.<br>We look forward to welcoming you.</p>
+
+      <div class="success-details" id="successDetails"></div>
+
+      <div class="success-note" id="successNote">
+        <strong>📧 Confirmation email sent.</strong><br>
+        A temporary hold of RM <span id="successHold">100</span> has been placed on your card. This is not a charge — it secures your reservation and will be released automatically if not captured.
+      </div>
+
+      <div class="success-actions">
+        <button class="btn primary" onclick="goLanding()">Back to Home</button>
+        <a class="btn" href="tel:+60129130952">Need to Change? Call Us</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Waitlist Success (reuses step5 with different content) -->
 
 </div>
 
@@ -386,37 +399,22 @@ const MIZU_GIST = 'https://gist.githubusercontent.com/abigailmini/4f8c9f567fa8a1
 const FALLBACK_API = 'https://9538cb73ceb40a2e-60-50-218-160.serveousercontent.com';
 let API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.endsWith('.serveousercontent.com')) ? `${window.location.origin}` : FALLBACK_API;
 
-// State
-let selectedDate = null;
-let selectedPax = null;
-let selectedSession = null;
-let selectedCourse = null; // will be array like ["Mirin Course", "Kirin Course", "Mirin Course"]
-let guestCourses = []; // per-guest selections
-let availableCourses = [];
-let availabilityData = null;
-let blockedDates = [];
+let selectedDate = null, selectedPax = null, selectedSession = null, selectedCourse = null;
+let guestCourses = [], availableCourses = [], availabilityData = null, blockedDates = [];
 let isWaitlist = false;
-
-// Try to load tunnel URL
-async function loadApiUrl() {
-  try {
-    const urlFile = '/tmp/mizu-api-url.txt';
-    // For GitHub Pages, we'll try the gist approach or use a hardcoded URL
-    // For local dev, localhost works
-  } catch (e) {}
-}
+let stripe = null, stripeElements = null, cardElement = null;
 
 // ── Navigation ──
-
 function showStep(id) {
-  document.querySelectorAll('.step, .landing').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.step, .landing').forEach(el => { el.classList.remove('active'); if (el.classList.contains('landing')) el.style.display = 'none'; });
   const el = document.getElementById(id);
   if (id === 'landing') { el.style.display = 'flex'; }
-  else { el.classList.add('active'); document.getElementById('landing').style.display = 'none'; }
+  else { el.classList.add('active'); }
 }
 
 function goLanding() {
   selectedDate = null; selectedPax = null; selectedSession = null; selectedCourse = null;
+  guestCourses = []; isWaitlist = false;
   document.getElementById('landing').style.display = 'flex';
   document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
 }
@@ -425,36 +423,49 @@ function startReservation() { showStep('step1'); initDatePicker(); }
 function goStep1() { showStep('step1'); }
 function goStep2() { showStep('step2'); loadAvailability(); }
 function goStep2b() { showStep('step2b'); initPaxSelector(); loadCourses(); updateStep2bBtn(); }
-function goStep3() { showStep('step3'); }
+function goStep3() { showStep('step3'); updateStep3Btn(); }
+
+function goStep4() {
+  const name = document.getElementById('guestName').value.trim();
+  const phone = document.getElementById('guestPhone').value.trim();
+  const email = document.getElementById('guestEmail').value.trim();
+  const error = document.getElementById('formError');
+  error.style.display = 'none';
+  if (!name || !phone || !email) { error.textContent = 'Please fill in all required fields.'; error.style.display = 'block'; return; }
+
+  // If waitlist, skip payment
+  if (isWaitlist) { submitWaitlist(); return; }
+
+  showStep('step4');
+  renderPaymentSummary();
+  mountCardElement();
+}
+
+function updateStep3Btn() {
+  const btn = document.getElementById('step3Next');
+  btn.textContent = isWaitlist ? 'Join Waitlist' : 'Continue to Payment';
+}
 
 // ── Date Picker ──
-
 function initDatePicker() {
   const container = document.getElementById('dateScroll');
   container.innerHTML = '';
   const today = new Date();
   const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
   for (let i = 1; i <= 30; i++) {
-    const d = new Date(today);
-    d.setDate(d.getDate() + i);
+    const d = new Date(today); d.setDate(d.getDate() + i);
     const dateStr = d.toISOString().split('T')[0];
     const blocked = blockedDates.includes(dateStr);
-
     const item = document.createElement('div');
-    item.className = 'date-item' + (blocked ? ' blocked' : '');
-    item.innerHTML = `
-      <div class="day-name">${days[d.getDay()]}</div>
-      <div class="day-num">${d.getDate()}</div>
-      <div class="month">${months[d.getMonth()]}</div>
-    `;
+    item.className = 'date-item' + (blocked ? ' blocked' : '') + (selectedDate === dateStr ? ' selected' : '');
+    item.innerHTML = `<div class="day-name">${days[d.getDay()]}</div><div class="day-num">${d.getDate()}</div><div class="month">${months[d.getMonth()]}</div>`;
     if (!blocked) {
       item.onclick = () => {
         document.querySelectorAll('.date-item').forEach(el => el.classList.remove('selected'));
         item.classList.add('selected');
         selectedDate = dateStr;
-        checkStep1();
+        document.getElementById('step1Next').disabled = false;
       };
     }
     container.appendChild(item);
@@ -462,13 +473,12 @@ function initDatePicker() {
 }
 
 // ── Pax Selector ──
-
 function initPaxSelector() {
   const container = document.getElementById('paxSelector');
   container.innerHTML = '';
   for (let i = 1; i <= 10; i++) {
     const item = document.createElement('div');
-    item.className = 'pax-item';
+    item.className = 'pax-item' + (selectedPax === i ? ' selected' : '');
     item.textContent = i;
     item.onclick = () => {
       document.querySelectorAll('.pax-item').forEach(el => el.classList.remove('selected'));
@@ -481,10 +491,6 @@ function initPaxSelector() {
   }
 }
 
-function checkStep1() {
-  document.getElementById('step1Next').disabled = !selectedDate;
-}
-
 function updateStep2bBtn() {
   const allPicked = selectedPax && guestCourses.length === selectedPax && guestCourses.every(x => x);
   document.getElementById('step2bNext').disabled = !allPicked;
@@ -492,55 +498,36 @@ function updateStep2bBtn() {
 }
 
 // ── Availability ──
-
 async function loadAvailability() {
   const list = document.getElementById('sessionList');
   const loading = document.getElementById('sessionsLoading');
   const error = document.getElementById('sessionError');
-  list.innerHTML = '';
-  loading.style.display = 'block';
-  error.style.display = 'none';
+  list.innerHTML = ''; loading.style.display = 'block'; error.style.display = 'none';
   document.getElementById('step2Next').disabled = true;
   selectedSession = null;
 
   try {
-    const res = await fetch(`${API_BASE}/availability?date=${selectedDate}`, {
-      headers: { 'Bypass-Tunnel-Reminder': 'true' }
-    });
+    const res = await fetch(`${API_BASE}/availability?date=${selectedDate}`, { headers: { 'Bypass-Tunnel-Reminder': 'true' } });
     availabilityData = await res.json();
     loading.style.display = 'none';
-
-    if (availabilityData.blocked) {
-      error.textContent = `Closed: ${availabilityData.reason}`;
-      error.style.display = 'block';
-      return;
-    }
-
+    if (availabilityData.blocked) { error.textContent = `Closed: ${availabilityData.reason}`; error.style.display = 'block'; return; }
     availableCourses = availabilityData.courses || [];
+
     availabilityData.sessions.forEach(s => {
       const isFull = s.remaining <= 0;
       const card = document.createElement('div');
       card.className = 'session-card' + (isFull ? ' full' : '');
-
       card.innerHTML = `
-        <div class="session-info">
-          <h3>${s.name}</h3>
-          <div class="time">${formatTime(s.startTime)} — ${formatTime(s.endTime)}</div>
-        </div>
-        <div class="session-meta">
-          ${isFull ? '<div class="waitlist-tag">Fully Booked</div>' : ''}
-        </div>
+        <div class="session-info"><h3>${s.name}</h3><div class="time">${formatTime(s.startTime)} — ${formatTime(s.endTime)}</div></div>
+        <div class="session-meta">${isFull ? '<div class="waitlist-tag">Fully Booked</div>' : ''}</div>
       `;
-
       card.onclick = () => {
-        document.querySelectorAll('.session-card').forEach(el => el.classList.remove('selected'));
+        document.querySelectorAll('#sessionList .session-card').forEach(el => el.classList.remove('selected'));
         card.classList.add('selected');
-        selectedSession = s;
-        isWaitlist = isFull;
+        selectedSession = s; isWaitlist = isFull;
         document.getElementById('step2Next').disabled = false;
         document.getElementById('step2Next').textContent = isFull ? 'Join Waitlist' : 'Continue';
       };
-
       list.appendChild(card);
     });
   } catch (e) {
@@ -555,22 +542,14 @@ function loadCourses() { renderGuestCourses(); }
 function renderGuestCourses() {
   const section = document.getElementById('courseSection');
   const list = document.getElementById('courseList');
-  list.innerHTML = '';
-  guestCourses = [];
-  selectedCourse = null;
-
-  if (!selectedPax || !availableCourses.length) {
-    section.style.display = 'none';
-    return;
-  }
-
+  list.innerHTML = ''; guestCourses = []; selectedCourse = null;
+  if (!selectedPax || !availableCourses.length) { section.style.display = 'none'; return; }
   section.style.display = 'block';
   guestCourses = new Array(selectedPax).fill(null);
 
   for (let g = 0; g < selectedPax; g++) {
     const row = document.createElement('div');
     row.style.cssText = 'margin-bottom:16px';
-
     const label = document.createElement('div');
     label.style.cssText = 'color:var(--text-dim);font-size:0.8rem;letter-spacing:0.05em;margin-bottom:8px';
     label.textContent = selectedPax === 1 ? 'YOUR COURSE' : `GUEST ${g + 1}`;
@@ -578,108 +557,159 @@ function renderGuestCourses() {
 
     const options = document.createElement('div');
     options.style.cssText = 'display:flex;flex-direction:column;gap:8px';
-
     availableCourses.forEach(c => {
       const btn = document.createElement('div');
       btn.className = 'session-card';
-      btn.setAttribute('data-guest', g);
-      btn.setAttribute('data-course', c.name);
-      btn.innerHTML = `
-        <div class="session-info"><h3 style="font-size:0.9rem">${c.name}</h3></div>
-        <div class="session-meta"><span class="price">RM ${c.price}</span></div>
-      `;
+      btn.innerHTML = `<div class="session-info"><h3 style="font-size:0.9rem">${c.name}</h3></div><div class="session-meta"><span class="price">RM ${c.price}</span></div>`;
       btn.onclick = () => {
         options.querySelectorAll('.session-card').forEach(el => el.classList.remove('selected'));
         btn.classList.add('selected');
         guestCourses[g] = c.name;
-        // Update selectedCourse as comma-separated string for the API
-        if (guestCourses.every(x => x)) {
-          selectedCourse = guestCourses.join(', ');
-        }
+        if (guestCourses.every(x => x)) selectedCourse = guestCourses.join(', ');
         updateStep2bBtn();
       };
       options.appendChild(btn);
     });
-
     row.appendChild(options);
     list.appendChild(row);
   }
 }
 
-function formatTime(t) {
-  const [h, m] = t.split(':').map(Number);
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  const h12 = h % 12 || 12;
-  return `${h12}:${m.toString().padStart(2,'0')} ${ampm}`;
+// ── Payment Summary ──
+function renderPaymentSummary() {
+  const holdTotal = selectedPax * 100;
+  const courseTotal = guestCourses.reduce((sum, c) => sum + ((availableCourses.find(x => x.name === c) || {}).price || 0), 0);
+  document.getElementById('holdAmount').textContent = holdTotal;
+  document.getElementById('paymentSummary').innerHTML = `
+    <div class="summary-title">Reservation Summary</div>
+    <div class="row"><span class="label">Date</span><span>${formatDisplayDate(selectedDate)}</span></div>
+    <div class="row"><span class="label">Session</span><span>${selectedSession.name} · ${formatTime(selectedSession.startTime)}</span></div>
+    <div class="row"><span class="label">Guests</span><span>${selectedPax}</span></div>
+    ${guestCourses.map((c, i) => `<div class="row"><span class="label">${selectedPax === 1 ? 'Course' : 'Guest ' + (i+1)}</span><span>${c}</span></div>`).join('')}
+    <div class="row total"><span class="label">Dining Total</span><span>RM ${courseTotal}</span></div>
+    <div class="row"><span class="label">Card Hold (refundable)</span><span>RM ${holdTotal}</span></div>
+  `;
 }
 
-// ── Submit ──
+function mountCardElement() {
+  if (!stripe || cardElement) return;
+  stripeElements = stripe.elements();
+  cardElement = stripeElements.create('card', {
+    style: {
+      base: { color: '#E8E8E8', fontFamily: 'Inter, sans-serif', fontSize: '15px', fontWeight: '300',
+        '::placeholder': { color: '#666' }, iconColor: '#C9A96E' },
+      invalid: { color: '#C97A4E', iconColor: '#C97A4E' }
+    }
+  });
+  cardElement.mount('#card-element');
+  cardElement.on('focus', () => document.getElementById('cardWrapper').classList.add('focused'));
+  cardElement.on('blur', () => document.getElementById('cardWrapper').classList.remove('focused'));
+}
 
-async function submitReservation() {
-  const name = document.getElementById('guestName').value.trim();
-  const phone = document.getElementById('guestPhone').value.trim();
-  const email = document.getElementById('guestEmail').value.trim();
-  const notes = document.getElementById('guestNotes').value.trim();
-  const error = document.getElementById('formError');
+// ── Process Payment ──
+async function processPayment() {
+  const btn = document.getElementById('payBtn');
+  const error = document.getElementById('cardError');
   error.style.display = 'none';
-
-  if (!name || !phone || !email) {
-    error.textContent = 'Please fill in all required fields.';
-    error.style.display = 'block';
-    return;
-  }
-
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.textContent = 'Submitting...';
+  btn.disabled = true; btn.textContent = 'Authorizing...';
 
   try {
-    const endpoint = isWaitlist ? '/waitlist' : '/reserve';
-    const res = await fetch(`${API_BASE}${endpoint}`, {
+    const name = document.getElementById('guestName').value.trim();
+    const phone = document.getElementById('guestPhone').value.trim();
+    const email = document.getElementById('guestEmail').value.trim();
+    const notes = document.getElementById('guestNotes').value.trim();
+
+    // Create payment method
+    const pmResult = await stripe.createPaymentMethod({
+      type: 'card', card: cardElement,
+      billing_details: { name, email, phone }
+    });
+    if (pmResult.error) { throw new Error(pmResult.error.message); }
+
+    // Submit booking with payment
+    const res = await fetch(`${API_BASE}/book`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
       body: JSON.stringify({
-        date: selectedDate,
-        session: selectedSession.name,
-        course: selectedCourse,
-        name, phone, email,
-        pax: selectedPax,
-        notes
+        date: selectedDate, session: selectedSession.name, course: selectedCourse,
+        name, phone, email, pax: selectedPax, notes,
+        createHold: true, payment_method: pmResult.paymentMethod.id
       })
     });
 
     const data = await res.json();
     if (data.error) throw new Error(data.error);
-
-    showConfirmation(data, name, phone, email);
+    showSuccess(data);
   } catch (e) {
-    error.textContent = e.message || 'Something went wrong. Please try again.';
+    error.textContent = e.message || 'Payment failed. Please try again.';
     error.style.display = 'block';
-    btn.disabled = false;
-    btn.textContent = 'Confirm Reservation';
+    btn.disabled = false; btn.textContent = 'Authorize & Confirm';
   }
 }
 
-function showConfirmation(data, name, phone, email) {
-  const isWL = data.status === 'waitlist';
-  const content = document.getElementById('confirmationContent');
-  content.innerHTML = `
-    <div class="check">${isWL ? '⏳' : '✓'}</div>
-    <h2>${isWL ? 'Waitlisted' : 'Reservation Confirmed'}</h2>
-    <p class="status-msg">${isWL
-      ? 'You\'re on the waitlist. We\'ll contact you if a spot opens up.'
-      : 'Thank you! We look forward to welcoming you.'
-    }</p>
-    <div class="booking-summary">
-      <div class="row"><span class="label">Date</span><span>${formatDisplayDate(selectedDate)}</span></div>
-      <div class="row"><span class="label">Session</span><span>${selectedSession.name} (${formatTime(selectedSession.startTime)})</span></div>
-      <div class="row"><span class="label">Party Size</span><span>${selectedPax} ${selectedPax === 1 ? 'guest' : 'guests'}</span></div>
-      <div class="row"><span class="label">Name</span><span>${name}</span></div>
-      ${guestCourses.length ? `<div class="row"><span class="label">Menu</span><span>${guestCourses.length === 1 ? guestCourses[0] : guestCourses.map((c,i) => `G${i+1}: ${c}`).join('<br>')}</span></div>` : ''}
-      ${!isWL && guestCourses.length ? `<div class="row"><span class="label">Total</span><span>RM ${guestCourses.reduce((sum, c) => sum + ((availableCourses.find(x=>x.name===c)||{}).price||0), 0)}</span></div>` : ''}
-    </div>
+// ── Waitlist Submit ──
+async function submitWaitlist() {
+  const name = document.getElementById('guestName').value.trim();
+  const phone = document.getElementById('guestPhone').value.trim();
+  const email = document.getElementById('guestEmail').value.trim();
+  const notes = document.getElementById('guestNotes').value.trim();
+  const btn = document.getElementById('step3Next');
+  btn.disabled = true; btn.textContent = 'Submitting...';
+
+  try {
+    const res = await fetch(`${API_BASE}/waitlist`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
+      body: JSON.stringify({ date: selectedDate, session: selectedSession.name, course: selectedCourse, name, phone, email, pax: selectedPax, notes })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    showWaitlistSuccess();
+  } catch (e) {
+    const error = document.getElementById('formError');
+    error.textContent = e.message || 'Something went wrong.'; error.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Join Waitlist';
+  }
+}
+
+// ── Success Pages ──
+function showSuccess(data) {
+  const holdTotal = selectedPax * 100;
+  const courseTotal = guestCourses.reduce((sum, c) => sum + ((availableCourses.find(x => x.name === c) || {}).price || 0), 0);
+  const name = document.getElementById('guestName').value.trim();
+
+  document.getElementById('successSub').innerHTML = `Thank you, ${name}.<br>We look forward to welcoming you.`;
+  document.getElementById('successHold').textContent = holdTotal;
+  document.getElementById('successDetails').innerHTML = `
+    <div class="detail-row"><span class="label">Date</span><span class="value">${formatDisplayDate(selectedDate)}</span></div>
+    <div class="detail-row"><span class="label">Session</span><span class="value">${selectedSession.name}<br>${formatTime(selectedSession.startTime)} — ${formatTime(selectedSession.endTime)}</span></div>
+    <div class="detail-row"><span class="label">Guests</span><span class="value">${selectedPax}</span></div>
+    ${guestCourses.map((c, i) => `<div class="detail-row"><span class="label">${selectedPax === 1 ? 'Course' : 'Guest ' + (i+1)}</span><span class="value">${c}</span></div>`).join('')}
+    <div class="detail-row"><span class="label">Total</span><span class="value" style="color:var(--gold)">RM ${courseTotal}</span></div>
   `;
-  showStep('step4');
+  document.getElementById('successNote').style.display = 'block';
+  document.querySelector('#step5 h2').textContent = 'Reservation Confirmed';
+  showStep('step5');
+}
+
+function showWaitlistSuccess() {
+  const name = document.getElementById('guestName').value.trim();
+  document.querySelector('#step5 .success-icon svg polyline').setAttribute('points', '');
+  document.querySelector('#step5 .success-icon').innerHTML = '<span style="font-size:2rem">⏳</span>';
+  document.querySelector('#step5 h2').textContent = 'You\'re on the Waitlist';
+  document.getElementById('successSub').innerHTML = `Thank you, ${name}.<br>We'll contact you as soon as a spot opens up.`;
+  document.getElementById('successDetails').innerHTML = `
+    <div class="detail-row"><span class="label">Date</span><span class="value">${formatDisplayDate(selectedDate)}</span></div>
+    <div class="detail-row"><span class="label">Session</span><span class="value">${selectedSession.name} · ${formatTime(selectedSession.startTime)}</span></div>
+    <div class="detail-row"><span class="label">Guests</span><span class="value">${selectedPax}</span></div>
+  `;
+  document.getElementById('successNote').innerHTML = '<strong>📋 Waitlist confirmed.</strong><br>We\'ll reach out via phone or email if a spot becomes available.';
+  showStep('step5');
+}
+
+function formatTime(t) {
+  const [h, m] = t.split(':').map(Number);
+  return `${h % 12 || 12}:${m.toString().padStart(2,'0')} ${h >= 12 ? 'PM' : 'AM'}`;
 }
 
 function formatDisplayDate(dateStr) {
@@ -688,146 +718,33 @@ function formatDisplayDate(dateStr) {
 }
 
 // ── Init ──
-let stripe = null;
-let stripeElements = null;
-let cardElement = null;
 (async function init() {
-  // Auto-discover API URL from gist (if on GitHub Pages)
   if (window.location.hostname.endsWith('.github.io')) {
     try {
       const r = await fetch(MIZU_GIST + '?t=' + Date.now());
       const url = (await r.text()).trim();
       if (url.startsWith('https://')) API_BASE = url;
-    } catch(e) { console.log('Gist fetch failed, using fallback'); }
+    } catch(e) {}
   }
   console.log('API_BASE:', API_BASE);
 
-  // Load config to get blocked dates
   try {
     const res = await fetch(`${API_BASE}/config`, { headers: { 'Bypass-Tunnel-Reminder': 'true' } });
     const config = await res.json();
     blockedDates = (config.blocked || []).map(b => b['Blocked Date']);
-  } catch(e) { console.log('Config load failed, using defaults'); }
+  } catch(e) {}
 
-  // Check if Stripe is configured on the server and load Stripe.js if so
   try {
-    const r = await fetch(`${API_BASE}/stripe-key`, {headers:{'Bypass-Tunnel-Reminder':'true'}});
+    const r = await fetch(`${API_BASE}/stripe-key`, { headers: { 'Bypass-Tunnel-Reminder': 'true' } });
     const info = await r.json();
     if (info.publishableKey) {
       const s = document.createElement('script');
       s.src = 'https://js.stripe.com/v3/';
       document.head.appendChild(s);
-      s.onload = () => {
-        stripe = Stripe(info.publishableKey);
-      };
+      s.onload = () => { stripe = Stripe(info.publishableKey); };
     }
-  } catch(e) { console.log('Stripe key load failed'); }
+  } catch(e) {}
 })();
-
-// Modify submitReservation to support Stripe Elements when available
-async function submitReservation() {
-  const name = document.getElementById('guestName').value.trim();
-  const phone = document.getElementById('guestPhone').value.trim();
-  const email = document.getElementById('guestEmail').value.trim();
-  const notes = document.getElementById('guestNotes').value.trim();
-  const error = document.getElementById('formError');
-  error.style.display = 'none';
-
-  if (!name || !phone || !email) {
-    error.textContent = 'Please fill in all required fields.';
-    error.style.display = 'block';
-    return;
-  }
-
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.textContent = 'Submitting...';
-
-  try {
-    const endpoint = isWaitlist ? '/waitlist' : '/book';
-
-    const payload = {
-      date: selectedDate,
-      session: selectedSession.name,
-      course: selectedCourse,
-      name, phone, email,
-      pax: selectedPax,
-      notes
-    };
-
-    // If Stripe is available and this is a confirmed booking (not waitlist), collect card
-    if (stripe && !isWaitlist) {
-      // Create payment method using Stripe Elements or fallback to Stripe Payment Request
-      // For brevity: use stripe.createPaymentMethod with a card element if present
-      if (!cardElement) {
-        // create a simple mounted card element in a prompt-like flow
-        const container = document.createElement('div');
-        container.style.position = 'fixed';
-        container.style.left = '0';
-        container.style.right = '0';
-        container.style.top = '0';
-        container.style.bottom = '0';
-        container.style.background = 'rgba(0,0,0,0.6)';
-        container.style.display = 'flex';
-        container.style.alignItems = 'center';
-        container.style.justifyContent = 'center';
-        container.innerHTML = `
-          <div style="width:320px;background:#0A0A0A;padding:16px;border-radius:8px;">
-            <div style="color:#E8E8E8;margin-bottom:8px">Card details (RM${selectedPax * 100} hold)</div>
-            <div id="card-placeholder" style="background:#141414;padding:12px;border-radius:6px;border:1px solid #2A2A2A"></div>
-            <div style="display:flex;gap:8px;margin-top:12px;">
-              <button id="cardCancel" class="btn">Cancel</button>
-              <button id="cardPay" class="btn primary">Authorize RM${selectedPax * 100}</button>
-            </div>
-          </div>
-        `;
-        document.body.appendChild(container);
-        stripeElements = stripe.elements();
-        cardElement = stripeElements.create('card', { style: { base: { color: '#E8E8E8', '::placeholder': { color: '#888' } } } });
-        cardElement.mount('#card-placeholder');
-        document.getElementById('cardCancel').onclick = () => { container.remove(); btn.disabled = false; btn.textContent = 'Confirm Reservation'; };
-        document.getElementById('cardPay').onclick = async () => {
-          document.getElementById('cardPay').disabled = true; document.getElementById('cardPay').textContent = 'Authorizing...';
-          const pmResult = await stripe.createPaymentMethod({ type: 'card', card: cardElement, billing_details: { name, email, phone } });
-          if (pmResult.error) {
-            error.textContent = pmResult.error.message; error.style.display = 'block'; btn.disabled = false; btn.textContent = 'Confirm Reservation'; container.remove(); return;
-          }
-          payload.createHold = true;
-          payload.payment_method = pmResult.paymentMethod.id;
-
-          try {
-            const res = await fetch(`${API_BASE}${endpoint}`, {
-              method: 'POST', headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' }, body: JSON.stringify(payload)
-            });
-            const data = await res.json();
-            if (data.error) throw new Error(data.error);
-            container.remove(); showConfirmation(data, name, phone, email);
-          } catch (e) {
-            error.textContent = e.message || 'Payment failed'; error.style.display = 'block';
-          }
-        };
-        return;
-      }
-    }
-
-    // Fallback: no stripe or waitlist
-    const res = await fetch(`${API_BASE}${endpoint}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-
-    showConfirmation(data, name, phone, email);
-  } catch (e) {
-    error.textContent = e.message || 'Something went wrong. Please try again.';
-    error.style.display = 'block';
-    btn.disabled = false;
-    btn.textContent = 'Confirm Reservation';
-  }
-}
 </script>
 </body>
 </html>
