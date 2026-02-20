@@ -774,11 +774,11 @@ async function submitReservation() {
         container.style.justifyContent = 'center';
         container.innerHTML = `
           <div style="width:320px;background:#0A0A0A;padding:16px;border-radius:8px;">
-            <div style="color:#E8E8E8;margin-bottom:8px">Card details (RM100 hold)</div>
+            <div style="color:#E8E8E8;margin-bottom:8px">Card details (RM${selectedPax * 100} hold)</div>
             <div id="card-placeholder" style="background:#141414;padding:12px;border-radius:6px;border:1px solid #2A2A2A"></div>
             <div style="display:flex;gap:8px;margin-top:12px;">
               <button id="cardCancel" class="btn">Cancel</button>
-              <button id="cardPay" class="btn primary">Authorize RM100</button>
+              <button id="cardPay" class="btn primary">Authorize RM${selectedPax * 100}</button>
             </div>
           </div>
         `;
