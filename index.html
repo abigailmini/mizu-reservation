@@ -598,16 +598,15 @@ function renderGuestCourses() {
 // ── Payment Summary ──
 function renderPaymentSummary() {
   const holdTotal = selectedPax * 100;
-  const courseTotal = guestCourses.reduce((sum, c) => sum + ((availableCourses.find(x => x.name === c) || {}).price || 0), 0);
   document.getElementById('holdAmount').textContent = holdTotal;
+  const coursePrice = (name) => (availableCourses.find(x => x.name === name) || {}).price || 0;
   document.getElementById('paymentSummary').innerHTML = `
     <div class="summary-title">Reservation Summary</div>
     <div class="row"><span class="label">Date</span><span>${formatDisplayDate(selectedDate)}</span></div>
     <div class="row"><span class="label">Session</span><span>${selectedSession.name} · ${formatTime(selectedSession.startTime)}</span></div>
     <div class="row"><span class="label">Guests</span><span>${selectedPax}</span></div>
-    ${guestCourses.map((c, i) => `<div class="row"><span class="label">${selectedPax === 1 ? 'Course' : 'Guest ' + (i+1)}</span><span>${c}</span></div>`).join('')}
-    <div class="row total"><span class="label">Dining Total</span><span>RM ${courseTotal}</span></div>
-    <div class="row"><span class="label">Card Hold (refundable)</span><span>RM ${holdTotal}</span></div>
+    ${guestCourses.map((c, i) => `<div class="row"><span class="label">${selectedPax === 1 ? 'Course' : 'Guest ' + (i+1)}</span><span>${c} · RM ${coursePrice(c)}</span></div>`).join('')}
+    <div class="row total"><span class="label">Card Hold (refundable)</span><span>RM ${holdTotal}</span></div>
   `;
 }
 
@@ -653,7 +652,8 @@ async function processPayment() {
       body: JSON.stringify({
         date: selectedDate, session: selectedSession.name, course: selectedCourse,
         name, phone, email, pax: selectedPax, notes,
-        createHold: true, payment_method: pmResult.paymentMethod.id
+        createHold: true, payment_method: pmResult.paymentMethod.id,
+        return_url: window.location.origin + window.location.pathname + '?payment_status=complete'
       })
     });
 
@@ -695,17 +695,17 @@ async function submitWaitlist() {
 // ── Success Pages ──
 function showSuccess(data) {
   const holdTotal = selectedPax * 100;
-  const courseTotal = guestCourses.reduce((sum, c) => sum + ((availableCourses.find(x => x.name === c) || {}).price || 0), 0);
-  const name = document.getElementById('guestName').value.trim();
+  const coursePrice = (name) => (availableCourses.find(x => x.name === name) || {}).price || 0;
+  const gName = document.getElementById('guestName').value.trim();
 
-  document.getElementById('successSub').innerHTML = `Thank you, ${name}.<br>We look forward to welcoming you.`;
+  document.getElementById('successSub').innerHTML = `Thank you, ${gName}.<br>We look forward to welcoming you.`;
   document.getElementById('successHold').textContent = holdTotal;
   document.getElementById('successDetails').innerHTML = `
     <div class="detail-row"><span class="label">Date</span><span class="value">${formatDisplayDate(selectedDate)}</span></div>
     <div class="detail-row"><span class="label">Session</span><span class="value">${selectedSession.name}<br>${formatTime(selectedSession.startTime)} — ${formatTime(selectedSession.endTime)}</span></div>
     <div class="detail-row"><span class="label">Guests</span><span class="value">${selectedPax}</span></div>
-    ${guestCourses.map((c, i) => `<div class="detail-row"><span class="label">${selectedPax === 1 ? 'Course' : 'Guest ' + (i+1)}</span><span class="value">${c}</span></div>`).join('')}
-    <div class="detail-row"><span class="label">Total</span><span class="value" style="color:var(--gold)">RM ${courseTotal}</span></div>
+    ${guestCourses.map((c, i) => `<div class="detail-row"><span class="label">${selectedPax === 1 ? 'Course' : 'Guest ' + (i+1)}</span><span class="value">${c} · RM ${coursePrice(c)}</span></div>`).join('')}
+    <div class="detail-row"><span class="label">Card Hold</span><span class="value" style="color:var(--gold)">RM ${holdTotal}</span></div>
   `;
   document.getElementById('successNote').style.display = 'block';
   document.querySelector('#step5 h2').textContent = 'Reservation Confirmed';
@@ -764,6 +764,24 @@ function formatDisplayDate(dateStr) {
       s.onload = () => { stripe = Stripe(info.publishableKey); };
     }
   } catch(e) {}
+
+  // Handle 3D Secure redirect return
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('payment_status') === 'complete' || urlParams.get('redirect_status')) {
+    const piId = urlParams.get('payment_intent');
+    const status = urlParams.get('redirect_status') || 'succeeded';
+    // Clean URL
+    window.history.replaceState({}, '', window.location.pathname);
+    // Show success page
+    document.getElementById('successSub').innerHTML = 'Your reservation has been confirmed.<br>We look forward to welcoming you.';
+    document.getElementById('successDetails').innerHTML = `
+      <div class="detail-row"><span class="label">Status</span><span class="value" style="color:var(--gold)">${status === 'succeeded' ? 'Confirmed ✓' : 'Processing'}</span></div>
+      <div class="detail-row"><span class="label">Reference</span><span class="value" style="font-size:0.75rem">${piId || 'N/A'}</span></div>
+    `;
+    document.getElementById('successNote').innerHTML = '<strong>📧 Confirmation details sent to your email.</strong><br>A temporary card hold has been placed to secure your reservation.';
+    document.querySelector('#step5 h2').textContent = 'Reservation Confirmed';
+    showStep('step5');
+  }
 })();
 </script>
 </body>
