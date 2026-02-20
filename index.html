@@ -10,25 +10,28 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --gold: #C9A96E;
-    --gold-light: #DFC08A;
-    --bg: #0A0A0A;
-    --bg-card: #141414;
-    --bg-hover: #1A1A1A;
+    --gold: #B58F55; /* muted aged gold */
+    --gold-light: #D7B67E;
+    --bg: #0e0f10; /* dark charcoal */
+    --bg-card: #121315;
+    --bg-hover: #161618;
     --text: #E8E8E8;
-    --text-dim: #888;
-    --border: #2A2A2A;
+    --text-dim: #9a9a9a;
+    --border: rgba(255,255,255,0.04);
     --success: #4A7A5A;
     --error: #8A3A3A;
+    --glass: rgba(255,255,255,0.02);
   }
 
   body {
     font-family: 'Inter', sans-serif;
-    background: var(--bg);
+    background-color: var(--bg);
     color: var(--text);
     min-height: 100vh;
     font-weight: 300;
     -webkit-font-smoothing: antialiased;
+    background-image: radial-gradient(rgba(255,255,255,0.01) 1px, transparent 1px), linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));
+    background-size: 10px 10px, 100% 100%;
   }
 
   .container {
@@ -40,6 +43,11 @@
     flex-direction: column;
   }
 
+  /* subtle wave divider */
+  .wave {
+    width: 100%; max-width: 240px; margin: 18px auto 0; opacity:0.6;
+  }
+
   /* ── Landing ── */
   .landing {
     flex: 1;
@@ -48,7 +56,9 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    gap: 40px;
+    gap: 24px;
+    padding-top: 40px;
+    transition: opacity 300ms ease, transform 300ms ease;
   }
 
   .logo-section h1 {
@@ -58,23 +68,28 @@
     color: var(--gold);
     letter-spacing: 0.15em;
     line-height: 1.1;
+    text-transform: uppercase;
   }
 
   .logo-section .subtitle {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1rem;
     color: var(--text-dim);
-    letter-spacing: 0.3em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    margin-top: 8px;
+    margin-top: 6px;
+  }
+
+  .logo-section .tagline {
+    margin-top: 10px; color: #cfc6b8; font-size: 0.95rem; opacity:0.95; font-weight:300; letter-spacing:0.02em;
   }
 
   .logo-section .divider {
     width: 60px;
     height: 1px;
-    background: var(--gold);
-    margin: 20px auto;
-    opacity: 0.5;
+    background: linear-gradient(90deg, rgba(181,143,85,0.9), rgba(181,143,85,0.2));
+    margin: 14px auto;
+    opacity: 0.9;
   }
 
   .logo-section .address {
@@ -83,221 +98,188 @@
     line-height: 1.6;
   }
 
+  /* buttons */
   .btn {
     display: block;
     width: 100%;
-    padding: 16px 32px;
-    border: 1px solid var(--gold);
+    padding: 12px 28px;
+    border: 1px solid rgba(181,143,85,0.9);
     background: transparent;
     color: var(--gold);
     font-family: 'Inter', sans-serif;
     font-size: 0.85rem;
     font-weight: 400;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 220ms ease;
     text-align: center;
     text-decoration: none;
+    border-radius: 8px;
+    backdrop-filter: blur(6px);
   }
 
-  .btn:hover { background: var(--gold); color: var(--bg); }
-  .btn.primary { background: var(--gold); color: var(--bg); }
-  .btn.primary:hover { background: var(--gold-light); }
-  .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .btn.primary { background: transparent; color: var(--gold); padding: 10px 26px; border-width:1px; }
+  .btn.primary:hover { background: rgba(181,143,85,0.06); color: var(--gold-light); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(11,11,11,0.5); }
+  .btn:hover { opacity:0.95; }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; transform:none; }
 
-  .landing-buttons { width: 100%; max-width: 300px; display: flex; flex-direction: column; gap: 12px; }
+  .landing-buttons { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 12px; }
 
   /* ── Steps ── */
-  .step { display: none; flex-direction: column; gap: 24px; padding-top: 20px; }
-  .step.active { display: flex; }
+  .step { display: none; flex-direction: column; gap: 20px; padding-top: 20px; opacity:0; transform:translateY(6px); transition: opacity 260ms ease, transform 260ms ease; }
+  .step.active { display: flex; opacity:1; transform:none; }
 
-  .step-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  .step-header { display: flex; align-items: center; gap: 12px; }
 
-  .back-btn {
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 4px 8px;
-  }
+  .back-btn { background: none; border: none; color: var(--text-dim); font-size: 1.2rem; cursor: pointer; padding: 6px 8px; }
 
-  .step-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.5rem;
-    color: var(--gold);
-    font-weight: 400;
-  }
+  .step-title { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: var(--gold); font-weight: 400; }
 
   /* ── Date Picker ── */
-  .date-scroll {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding: 4px 0;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
+  .date-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 8px 2px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
   .date-scroll::-webkit-scrollbar { display: none; }
 
   .date-item {
     flex-shrink: 0;
-    width: 64px;
-    padding: 12px 8px;
+    width: 68px;
+    padding: 12px 10px;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 12px;
     text-align: center;
     cursor: pointer;
-    transition: all 0.2s;
-    background: var(--bg-card);
+    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
   }
 
-  .date-item:hover { border-color: var(--gold); }
-  .date-item.selected { border-color: var(--gold); background: rgba(201,169,110,0.1); }
-  .date-item.blocked { opacity: 0.3; cursor: not-allowed; }
+  .date-item:hover { transform: translateY(-4px); border-color: rgba(181,143,85,0.9); }
+  .date-item.selected { border-color: rgba(181,143,85,0.95); background: linear-gradient(180deg, rgba(181,143,85,0.06), rgba(0,0,0,0.0)); }
+  .date-item.blocked { opacity: 0.32; cursor: not-allowed; }
 
   .date-item .day-name { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
-  .date-item .day-num { font-size: 1.3rem; margin: 4px 0; color: var(--text); font-weight: 400; }
+  .date-item .day-num { font-size: 1.3rem; margin: 6px 0; color: var(--text); font-weight: 400; }
   .date-item .month { font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; }
   .date-item.selected .day-num { color: var(--gold); }
 
-  /* ── Party Size ── */
-  .pax-selector {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
+  /* ── Party Size (circle) ── */
+  .pax-selector { display: flex; gap: 8px; flex-wrap: wrap; }
 
   .pax-item {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 50%;
     cursor: pointer;
-    transition: all 0.2s;
-    font-size: 0.9rem;
+    transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+    font-size: 0.95rem;
     background: var(--bg-card);
+    box-shadow: inset 0 -2px 6px rgba(0,0,0,0.6);
   }
 
-  .pax-item:hover { border-color: var(--gold); }
-  .pax-item.selected { border-color: var(--gold); background: rgba(201,169,110,0.1); color: var(--gold); }
+  .pax-item:hover { transform: translateY(-3px); border-color: rgba(181,143,85,0.9); }
+  .pax-item.selected { border-color: rgba(181,143,85,0.95); background: linear-gradient(180deg, rgba(181,143,85,0.06), rgba(0,0,0,0)); color: var(--gold); box-shadow: 0 8px 20px rgba(11,11,11,0.6); }
 
   /* ── Sessions ── */
-  .session-list { display: flex; flex-direction: column; gap: 10px; }
+  .session-list { display: flex; flex-direction: column; gap: 12px; }
 
   .session-card {
-    padding: 16px;
+    padding: 14px 16px;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: all 0.2s;
-    background: var(--bg-card);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+    display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden;
   }
 
-  .session-card:hover:not(.full) { border-color: var(--gold); }
-  .session-card.selected { border-color: var(--gold); background: rgba(201,169,110,0.1); }
-  .session-card.full { opacity: 0.5; }
-
-  .session-info h3 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.1rem;
-    font-weight: 400;
-    margin-bottom: 4px;
+  .session-card::after {
+    content: '';
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    width: 26px; height: 26px; border-radius: 50%; border: 1px solid rgba(181,143,85,0.12); box-shadow: inset 0 0 8px rgba(181,143,85,0.02);
   }
 
+  .session-card:hover:not(.full) { border-color: rgba(181,143,85,0.95); transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+  .session-card.selected { border-color: rgba(181,143,85,0.95); background: rgba(181,143,85,0.04); }
+  .session-card.full { opacity: 0.46; }
+
+  .session-info h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; font-weight: 400; margin-bottom: 4px; }
   .session-info .time { font-size: 0.8rem; color: var(--text-dim); }
-
   .session-meta { text-align: right; }
   .session-meta .price { color: var(--gold); font-size: 0.9rem; }
   .session-meta .seats { font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; }
   .session-meta .seats.low { color: #C97A4E; }
-  .session-meta .waitlist-tag { font-size: 0.7rem; color: var(--error); border: 1px solid var(--error); padding: 2px 8px; border-radius: 4px; }
+  .session-meta .waitlist-tag { font-size: 0.68rem; color: var(--error); border: 1px solid var(--error); padding: 4px 8px; border-radius: 6px; }
 
-  /* ── Form ── */
+  /* ── Course selection: compact chips (course cards are created with .session-card in JS; restyle within #courseList) ── */
+  #courseList .session-card { display: inline-flex; padding: 8px 12px; border-radius: 999px; margin-right: 8px; margin-bottom: 8px; align-items: center; gap:12px; }
+  #courseList .session-card .session-info h3 { font-size: 0.9rem; }
+  #courseList .session-card .session-meta { text-align: right; min-width:54px; }
+
+  /* when JS renders a vertical options container, make it wrap nicely */
+  #courseList { display:flex; flex-direction:column; gap:12px; }
+  #courseList div[style] { /* rows created by JS */ display:block; }
+
+  /* Make the chips look tactile */
+  #courseList .session-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
+  #courseList .session-card.selected { background: linear-gradient(90deg, rgba(181,143,85,0.07), rgba(0,0,0,0.02)); color: var(--gold); border-color: rgba(181,143,85,0.9); }
+
+  /* ── Form (refined inputs) ── */
   .form-group { display: flex; flex-direction: column; gap: 6px; }
-  .form-group label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
+  .form-group label { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; }
 
   .form-group input, .form-group textarea {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 12px 14px;
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 300;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .form-group input:focus, .form-group textarea:focus { border-color: var(--gold); }
-  .form-group textarea { resize: vertical; min-height: 80px; }
-
-  /* ── Confirmation ── */
-  .confirmation {
-    text-align: center;
-    padding: 40px 0;
-  }
-
-  .confirmation .check {
-    width: 60px;
-    height: 60px;
-    border: 2px solid var(--gold);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 20px;
-    font-size: 1.5rem;
-    color: var(--gold);
-  }
-
-  .confirmation h2 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.8rem;
-    color: var(--gold);
-    font-weight: 400;
-    margin-bottom: 8px;
-  }
-
-  .confirmation .status-msg { color: var(--text-dim); margin-bottom: 24px; font-size: 0.9rem; }
-
-  .booking-summary {
-    background: var(--bg-card);
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 20px;
-    text-align: left;
-    margin-bottom: 24px;
+    padding: 14px 14px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 300;
+    outline: none;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
   }
 
-  .booking-summary .row {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.85rem;
+  .form-group input:focus, .form-group textarea:focus { border-color: rgba(181,143,85,0.95); box-shadow: 0 8px 24px rgba(11,11,11,0.6); }
+  .form-group textarea { resize: vertical; min-height: 88px; }
+
+  /* floating-placeholder hint (use placeholder text lightly) */
+  .form-group input::placeholder, .form-group textarea::placeholder { color: rgba(255,255,255,0.22); }
+
+  /* ── Confirmation ── */
+  .confirmation { text-align: center; padding: 30px 0; animation: fadeIn 420ms ease both; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(6px);} to { opacity:1; transform:none; } }
+
+  .confirmation .check {
+    width: 70px; height: 70px; border: 2px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; font-size: 1.6rem; color: var(--gold);
+    box-shadow: 0 12px 36px rgba(11,11,11,0.6);
   }
 
+  .confirmation h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--gold); font-weight: 400; margin-bottom: 6px; }
+  .confirmation .status-msg { color: var(--text-dim); margin-bottom: 18px; font-size: 0.95rem; }
+
+  .booking-summary { background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: left; margin-bottom: 18px; }
+  .booking-summary .row { display:flex; justify-content:space-between; padding:8px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
   .booking-summary .row:last-child { border: none; }
   .booking-summary .row .label { color: var(--text-dim); }
 
-  .loading { text-align: center; padding: 40px; color: var(--text-dim); }
+  .loading { text-align: center; padding: 28px; color: var(--text-dim); position:relative; }
+  .loading:before { content:''; display:inline-block; width:18px; height:18px; border-radius:50%; border:3px solid rgba(181,143,85,0.15); border-top-color: var(--gold); animation: spin 900ms linear infinite; margin-right:10px; vertical-align:middle; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-  .error-msg { color: #C97A4E; font-size: 0.85rem; text-align: center; padding: 8px; }
+  .error-msg { color: #C97A4E; font-size: 0.9rem; text-align: center; padding: 8px; }
 
-  .section-label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
+  .section-label { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; }
+
+  /* small screens adjustments */
+  @media (max-width:480px) {
+    .container { padding: 18px; }
+    .logo-section h1 { font-size: 3rem; }
+  }
 </style>
 </head>
 <body>
@@ -308,7 +290,9 @@
     <div class="logo-section">
       <h1>MIZU</h1>
       <div class="subtitle">Omakase</div>
+      <div class="tagline">An intimate dining experience — seasonal, small-batch, crafted</div>
       <div class="divider"></div>
+      <svg class="wave" viewBox="0 0 120 20" xmlns="http://www.w3.org/2000/svg"><path d="M0 10 C 20 2, 40 18, 60 10 C 80 2,100 18,120 10" stroke="rgba(181,143,85,0.6)" stroke-width="0.9" fill="none" stroke-linecap="round"/></svg>
       <div class="address">
         53-G, Block D, Jaya One<br>
         Petaling Jaya, Selangor
