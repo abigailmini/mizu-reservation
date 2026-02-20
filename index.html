@@ -86,27 +86,30 @@
   .progress-bar .dot.current { background: rgba(201,169,110,0.5); }
 
   /* ── Calendar Grid ── */
-  .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-  .cal-header .cal-month { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; color: var(--text); font-weight: 400; letter-spacing: 0.03em; }
-  .cal-header button { background: none; border: 1px solid var(--border); color: var(--text-dim); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1rem; transition: border-color 180ms ease, color 180ms ease; display: flex; align-items: center; justify-content: center; }
-  .cal-header button:hover { border-color: rgba(181,143,85,0.6); color: var(--gold); }
-  .cal-header button:disabled { opacity: 0.2; cursor: not-allowed; }
+  .cal-wrap {
+    background: linear-gradient(180deg, rgba(255,255,255,0.015), transparent);
+    border: 1px solid var(--border); border-radius: 14px; padding: 18px;
+  }
+  .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .cal-header .cal-month { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--gold); font-weight: 400; letter-spacing: 0.04em; }
+  .cal-header button { background: none; border: 1px solid var(--border); color: var(--text-dim); width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 1rem; transition: all 180ms ease; display: flex; align-items: center; justify-content: center; }
+  .cal-header button:hover { border-color: rgba(181,143,85,0.6); color: var(--gold); background: rgba(181,143,85,0.04); }
+  .cal-header button:disabled { opacity: 0.15; cursor: not-allowed; }
 
-  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
-  .cal-grid .cal-dow { font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; padding: 6px 0; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+  .cal-grid .cal-dow { font-size: 0.6rem; color: rgba(201,169,110,0.5); text-transform: uppercase; letter-spacing: 0.1em; padding: 4px 0 10px; font-weight: 500; }
 
   .cal-day {
     aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-    border-radius: 10px; font-size: 0.9rem; cursor: pointer;
-    transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
-    border: 1px solid transparent; color: var(--text); position: relative;
+    border-radius: 50%; font-size: 0.88rem; cursor: pointer;
+    transition: all 180ms ease; border: 1.5px solid transparent; color: var(--text); position: relative;
   }
-  .cal-day:hover:not(.disabled):not(.past) { background: rgba(181,143,85,0.06); border-color: rgba(181,143,85,0.4); transform: scale(1.05); }
-  .cal-day.selected { background: rgba(181,143,85,0.1); border-color: rgba(181,143,85,0.9); color: var(--gold); font-weight: 500; }
-  .cal-day.past, .cal-day.disabled { color: rgba(255,255,255,0.15); cursor: not-allowed; }
-  .cal-day.blocked { color: rgba(255,255,255,0.15); cursor: not-allowed; text-decoration: line-through; }
+  .cal-day:hover:not(.disabled):not(.past):not(.empty):not(.blocked) { background: rgba(181,143,85,0.08); color: var(--gold); }
+  .cal-day.selected { background: rgba(181,143,85,0.15); border-color: var(--gold); color: var(--gold); font-weight: 500; box-shadow: 0 0 12px rgba(201,169,110,0.15); }
+  .cal-day.past, .cal-day.disabled { color: rgba(255,255,255,0.12); cursor: default; }
+  .cal-day.blocked { color: rgba(255,255,255,0.12); cursor: default; text-decoration: line-through; }
   .cal-day.empty { cursor: default; }
-  .cal-day.today { border-color: rgba(201,169,110,0.3); }
+  .cal-day.today::after { content: ''; position: absolute; bottom: 3px; width: 4px; height: 4px; border-radius: 50%; background: var(--gold); opacity: 0.6; }
 
   /* ── Party Size ── */
   .pax-selector { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -143,12 +146,28 @@
   .session-meta .seats-badge.full { color: var(--text-dim); }
   .session-meta .waitlist-tag { font-size: 0.68rem; color: var(--error); border: 1px solid var(--error); padding: 4px 8px; border-radius: 6px; }
 
-  /* ── Course chips ── */
-  #courseList { display:flex; flex-direction:column; gap:12px; }
-  #courseList .session-card { display: flex; padding: 12px 14px; border-radius: 10px; align-items: center; gap:12px; }
-  #courseList .session-card .session-info h3 { font-size: 0.9rem; }
-  #courseList .session-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
-  #courseList .session-card.selected { background: linear-gradient(90deg, rgba(181,143,85,0.07), rgba(0,0,0,0.02)); color: var(--gold); border-color: rgba(181,143,85,0.9); }
+  /* ── Course Counter Cards ── */
+  .course-card {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px; border: 1px solid var(--border); border-radius: 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+    transition: border-color 200ms ease, background 200ms ease;
+  }
+  .course-card.has-count { border-color: rgba(181,143,85,0.5); background: rgba(181,143,85,0.03); }
+  .course-card .course-info h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; font-weight: 400; margin-bottom: 2px; }
+  .course-card .course-info .course-price { font-size: 0.82rem; color: var(--gold); }
+  .course-card .course-counter { display: flex; align-items: center; gap: 14px; }
+  .course-card .counter-btn {
+    width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--bg-card); color: var(--text); font-size: 1.1rem;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+  }
+  .course-card .counter-btn:hover { border-color: rgba(181,143,85,0.7); transform: scale(1.1); }
+  .course-card .counter-btn:disabled { opacity: 0.2; cursor: not-allowed; transform: none; }
+  .course-card .counter-val { font-size: 1.1rem; min-width: 24px; text-align: center; color: var(--gold); font-weight: 500; }
+  .course-remaining { text-align: center; margin-top: 10px; font-size: 0.78rem; color: var(--text-dim); }
+  .course-remaining.over { color: #C8503C; }
 
   /* ── Form ── */
   .form-group { display: flex; flex-direction: column; gap: 6px; }
@@ -287,12 +306,14 @@
       <button class="back-btn" onclick="goLanding()">←</button>
       <span class="step-title">Select Date</span>
     </div>
-    <div class="cal-header">
-      <button id="calPrev" onclick="calNav(-1)">‹</button>
-      <span class="cal-month" id="calMonth"></span>
-      <button id="calNext" onclick="calNav(1)">›</button>
+    <div class="cal-wrap">
+      <div class="cal-header">
+        <button id="calPrev" onclick="calNav(-1)">‹</button>
+        <span class="cal-month" id="calMonth"></span>
+        <button id="calNext" onclick="calNav(1)">›</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
     </div>
-    <div class="cal-grid" id="calGrid"></div>
     <button class="btn primary" id="step1Next" disabled onclick="goStep2()">Continue</button>
   </div>
 
@@ -319,8 +340,9 @@
     <div class="section-label">Party Size</div>
     <div class="pax-selector" id="paxSelector"></div>
     <div id="courseSection" style="display:none">
-      <div class="section-label" style="margin-top:20px">Select Course for Each Guest</div>
-      <div id="courseList"></div>
+      <div class="section-label" style="margin-top:20px">Select Courses</div>
+      <div id="courseList" style="display:flex;flex-direction:column;gap:10px"></div>
+      <div class="course-remaining" id="courseRemaining"></div>
     </div>
     <button class="btn primary" id="step2bNext" disabled onclick="goStep3()">Continue</button>
   </div>
@@ -577,9 +599,9 @@ function initPaxSelector() {
 }
 
 function updateStep2bBtn() {
-  const allPicked = selectedPax && guestCourses.length === selectedPax && guestCourses.every(x => x);
-  document.getElementById('step2bNext').disabled = !allPicked;
-  if (allPicked) selectedCourse = guestCourses.join(', ');
+  const total = Object.values(courseCounts).reduce((s, v) => s + v, 0);
+  const ready = selectedPax && total === selectedPax;
+  document.getElementById('step2bNext').disabled = !ready;
 }
 
 // ── Availability ──
@@ -644,40 +666,81 @@ async function loadAvailability() {
 
 function loadCourses() { renderGuestCourses(); }
 
+let courseCounts = {}; // { "Mirin Course": 2, "Kirin Course": 1 }
+
 function renderGuestCourses() {
   const section = document.getElementById('courseSection');
   const list = document.getElementById('courseList');
-  list.innerHTML = ''; guestCourses = []; selectedCourse = null;
+  list.innerHTML = ''; selectedCourse = null;
+  courseCounts = {};
+
   if (!selectedPax || !availableCourses.length) { section.style.display = 'none'; return; }
   section.style.display = 'block';
-  guestCourses = new Array(selectedPax).fill(null);
+  availableCourses.forEach(c => { courseCounts[c.name] = 0; });
 
-  for (let g = 0; g < selectedPax; g++) {
-    const row = document.createElement('div');
-    row.style.cssText = 'margin-bottom:16px';
-    const label = document.createElement('div');
-    label.style.cssText = 'color:var(--text-dim);font-size:0.8rem;letter-spacing:0.05em;margin-bottom:8px';
-    label.textContent = selectedPax === 1 ? 'YOUR COURSE' : `GUEST ${g + 1}`;
-    row.appendChild(label);
+  availableCourses.forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'course-card';
+    card.id = `course-${c.name.replace(/\s/g,'-')}`;
+    card.innerHTML = `
+      <div class="course-info">
+        <h3>${c.name}</h3>
+        <div class="course-price">RM ${c.price} / pax</div>
+      </div>
+      <div class="course-counter">
+        <button class="counter-btn" onclick="adjustCourse('${c.name}', -1)">−</button>
+        <span class="counter-val" id="cval-${c.name.replace(/\s/g,'-')}">0</span>
+        <button class="counter-btn" onclick="adjustCourse('${c.name}', 1)">+</button>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+  updateCourseUI();
+}
 
-    const options = document.createElement('div');
-    options.style.cssText = 'display:flex;flex-direction:column;gap:8px';
-    availableCourses.forEach(c => {
-      const btn = document.createElement('div');
-      btn.className = 'session-card';
-      btn.innerHTML = `<div class="session-info"><h3 style="font-size:0.9rem">${c.name}</h3></div><div class="session-meta"><span class="price">RM ${c.price}</span></div>`;
-      btn.onclick = () => {
-        options.querySelectorAll('.session-card').forEach(el => el.classList.remove('selected'));
-        btn.classList.add('selected');
-        guestCourses[g] = c.name;
-        if (guestCourses.every(x => x)) selectedCourse = guestCourses.join(', ');
-        updateStep2bBtn();
-      };
-      options.appendChild(btn);
-    });
-    row.appendChild(options);
-    list.appendChild(row);
+function adjustCourse(name, delta) {
+  const current = courseCounts[name] || 0;
+  const totalOthers = Object.values(courseCounts).reduce((s, v) => s + v, 0) - current;
+  const newVal = current + delta;
+  if (newVal < 0 || totalOthers + newVal > selectedPax) return;
+  courseCounts[name] = newVal;
+  updateCourseUI();
+  updateStep2bBtn();
+}
+
+function updateCourseUI() {
+  const total = Object.values(courseCounts).reduce((s, v) => s + v, 0);
+  const remaining = selectedPax - total;
+  const remEl = document.getElementById('courseRemaining');
+
+  availableCourses.forEach(c => {
+    const id = c.name.replace(/\s/g,'-');
+    const valEl = document.getElementById(`cval-${id}`);
+    const cardEl = document.getElementById(`course-${id}`);
+    if (valEl) valEl.textContent = courseCounts[c.name] || 0;
+    if (cardEl) {
+      cardEl.classList.toggle('has-count', (courseCounts[c.name] || 0) > 0);
+    }
+  });
+
+  if (remaining > 0) {
+    remEl.textContent = `${remaining} more ${remaining === 1 ? 'guest' : 'guests'} to assign`;
+    remEl.className = 'course-remaining';
+  } else if (remaining === 0) {
+    remEl.textContent = 'All guests assigned ✓';
+    remEl.className = 'course-remaining';
+    remEl.style.color = 'var(--gold)';
+  } else {
+    remEl.textContent = `Too many assigned (${total}/${selectedPax})`;
+    remEl.className = 'course-remaining over';
   }
+
+  // Build guestCourses array + selectedCourse string from counts
+  guestCourses = [];
+  Object.entries(courseCounts).forEach(([name, count]) => {
+    for (let i = 0; i < count; i++) guestCourses.push(name);
+  });
+  selectedCourse = total === selectedPax ? guestCourses.join(', ') : null;
 }
 
 // ── Payment Summary ──
@@ -690,7 +753,7 @@ function renderPaymentSummary() {
     <div class="row"><span class="label">Date</span><span>${formatDisplayDate(selectedDate)}</span></div>
     <div class="row"><span class="label">Session</span><span>${selectedSession.name} · ${formatTime(selectedSession.startTime)}</span></div>
     <div class="row"><span class="label">Guests</span><span>${selectedPax}</span></div>
-    ${guestCourses.map((c, i) => `<div class="row"><span class="label">${selectedPax === 1 ? 'Course' : 'Guest ' + (i+1)}</span><span>${c} · RM ${coursePrice(c)}</span></div>`).join('')}
+    ${Object.entries(courseCounts).filter(([,v])=>v>0).map(([name,count]) => `<div class="row"><span class="label">${name}</span><span>×${count} · RM ${coursePrice(name)} each</span></div>`).join('')}
     <div class="row total"><span class="label">Card Hold (refundable)</span><span>RM ${holdTotal}</span></div>
   `;
 }
@@ -789,7 +852,7 @@ function showSuccess(data) {
     <div class="detail-row"><span class="label">Date</span><span class="value">${formatDisplayDate(selectedDate)}</span></div>
     <div class="detail-row"><span class="label">Session</span><span class="value">${selectedSession.name}<br>${formatTime(selectedSession.startTime)} — ${formatTime(selectedSession.endTime)}</span></div>
     <div class="detail-row"><span class="label">Guests</span><span class="value">${selectedPax}</span></div>
-    ${guestCourses.map((c, i) => `<div class="detail-row"><span class="label">${selectedPax === 1 ? 'Course' : 'Guest ' + (i+1)}</span><span class="value">${c} · RM ${coursePrice(c)}</span></div>`).join('')}
+    ${Object.entries(courseCounts).filter(([,v])=>v>0).map(([name,count]) => `<div class="detail-row"><span class="label">${name}</span><span class="value">×${count} · RM ${coursePrice(name)} each</span></div>`).join('')}
     <div class="detail-row"><span class="label">Card Hold</span><span class="value" style="color:var(--gold)">RM ${holdTotal}</span></div>
   `;
   document.getElementById('successNote').style.display = 'block';
