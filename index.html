@@ -556,7 +556,7 @@ async function loadAvailability() {
     });
   } catch (e) {
     loading.style.display = 'none';
-    error.textContent = 'Unable to load availability. Please try again.';
+    error.innerHTML = 'Unable to load availability. <a href="#" onclick="loadAvailability();return false" style="color:var(--gold)">Tap to retry</a>';
     error.style.display = 'block';
   }
 }
@@ -695,7 +695,7 @@ let cardElement = null;
 
   // Check if Stripe is configured on the server and load Stripe.js if so
   try {
-    const r = await fetch(`${API_BASE}/stripe-key`);
+    const r = await fetch(`${API_BASE}/stripe-key`, {headers:{'Bypass-Tunnel-Reminder':'true'}});
     const info = await r.json();
     if (info.publishableKey) {
       const s = document.createElement('script');
