@@ -320,23 +320,19 @@
     </div>
   </div>
 
-  <!-- Step 1: Date & Pax -->
+  <!-- Step 1: Date -->
   <div class="step" id="step1">
     <div class="step-header">
       <button class="back-btn" onclick="goLanding()">←</button>
-      <span class="step-title">Select Date & Party Size</span>
+      <span class="step-title">Select Date</span>
     </div>
 
-    <div class="section-label">Date</div>
     <div class="date-scroll" id="dateScroll"></div>
-
-    <div class="section-label">Party Size</div>
-    <div class="pax-selector" id="paxSelector"></div>
 
     <button class="btn primary" id="step1Next" disabled onclick="goStep2()">Continue</button>
   </div>
 
-  <!-- Step 2: Session -->
+  <!-- Step 2: Session (time) -->
   <div class="step" id="step2">
     <div class="step-header">
       <button class="back-btn" onclick="goStep1()">←</button>
@@ -348,13 +344,19 @@
     <button class="btn primary" id="step2Next" disabled onclick="goStep2b()">Continue</button>
   </div>
 
-  <!-- Step 2b: Course Selection -->
+  <!-- Step 2b: Party Size + Course -->
   <div class="step" id="step2b">
     <div class="step-header">
       <button class="back-btn" onclick="goStep2()">←</button>
-      <span class="step-title">Select Course</span>
+      <span class="step-title">Party Size & Menu</span>
     </div>
+
+    <div class="section-label">Party Size</div>
+    <div class="pax-selector" id="paxSelector"></div>
+
+    <div class="section-label" style="margin-top:20px">Select Course</div>
     <div class="session-list" id="courseList"></div>
+
     <button class="btn primary" id="step2bNext" disabled onclick="goStep3()">Continue</button>
   </div>
 
@@ -433,10 +435,10 @@ function goLanding() {
   document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
 }
 
-function startReservation() { showStep('step1'); initDatePicker(); initPaxSelector(); }
+function startReservation() { showStep('step1'); initDatePicker(); }
 function goStep1() { showStep('step1'); }
 function goStep2() { showStep('step2'); loadAvailability(); }
-function goStep2b() { showStep('step2b'); loadCourses(); }
+function goStep2b() { showStep('step2b'); initPaxSelector(); loadCourses(); updateStep2bBtn(); }
 function goStep3() { showStep('step3'); }
 
 // ── Date Picker ──
@@ -486,14 +488,18 @@ function initPaxSelector() {
       document.querySelectorAll('.pax-item').forEach(el => el.classList.remove('selected'));
       item.classList.add('selected');
       selectedPax = i;
-      checkStep1();
+      updateStep2bBtn();
     };
     container.appendChild(item);
   }
 }
 
 function checkStep1() {
-  document.getElementById('step1Next').disabled = !(selectedDate && selectedPax);
+  document.getElementById('step1Next').disabled = !selectedDate;
+}
+
+function updateStep2bBtn() {
+  document.getElementById('step2bNext').disabled = !(selectedPax && selectedCourse);
 }
 
 // ── Availability ──
@@ -523,11 +529,9 @@ async function loadAvailability() {
 
     availableCourses = availabilityData.courses || [];
     availabilityData.sessions.forEach(s => {
-      const isFull = s.remaining < selectedPax;
+      const isFull = s.remaining <= 0;
       const card = document.createElement('div');
       card.className = 'session-card' + (isFull ? ' full' : '');
-
-      const seatsClass = s.remaining <= 5 ? 'seats low' : 'seats';
 
       card.innerHTML = `
         <div class="session-info">
@@ -535,11 +539,7 @@ async function loadAvailability() {
           <div class="time">${formatTime(s.startTime)} — ${formatTime(s.endTime)}</div>
         </div>
         <div class="session-meta">
-          ${s.price ? `<div class="price">RM ${s.price}</div>` : ''}
-          ${isFull
-            ? '<div class="waitlist-tag">Join Waitlist</div>'
-            : `<div class="${seatsClass}">${s.remaining} seats left</div>`
-          }
+          ${isFull ? '<div class="waitlist-tag">Fully Booked</div>' : ''}
         </div>
       `;
 
@@ -584,7 +584,7 @@ function loadCourses() {
       list.querySelectorAll('.session-card').forEach(el => el.classList.remove('selected'));
       card.classList.add('selected');
       selectedCourse = c.name;
-      document.getElementById('step2bNext').disabled = false;
+      updateStep2bBtn();
     };
     list.appendChild(card);
   });
