@@ -354,8 +354,10 @@
     <div class="section-label">Party Size</div>
     <div class="pax-selector" id="paxSelector"></div>
 
-    <div class="section-label" style="margin-top:20px">Select Course</div>
-    <div class="session-list" id="courseList"></div>
+    <div id="courseSection" style="display:none">
+      <div class="section-label" style="margin-top:20px">Select Course for Each Guest</div>
+      <div id="courseList"></div>
+    </div>
 
     <button class="btn primary" id="step2bNext" disabled onclick="goStep3()">Continue</button>
   </div>
@@ -405,7 +407,8 @@ let API_BASE = (window.location.hostname === 'localhost' || window.location.host
 let selectedDate = null;
 let selectedPax = null;
 let selectedSession = null;
-let selectedCourse = null;
+let selectedCourse = null; // will be array like ["Mirin Course", "Kirin Course", "Mirin Course"]
+let guestCourses = []; // per-guest selections
 let availableCourses = [];
 let availabilityData = null;
 let blockedDates = [];
@@ -488,6 +491,7 @@ function initPaxSelector() {
       document.querySelectorAll('.pax-item').forEach(el => el.classList.remove('selected'));
       item.classList.add('selected');
       selectedPax = i;
+      renderGuestCourses();
       updateStep2bBtn();
     };
     container.appendChild(item);
@@ -499,7 +503,9 @@ function checkStep1() {
 }
 
 function updateStep2bBtn() {
-  document.getElementById('step2bNext').disabled = !(selectedPax && selectedCourse);
+  const allPicked = selectedPax && guestCourses.length === selectedPax && guestCourses.every(x => x);
+  document.getElementById('step2bNext').disabled = !allPicked;
+  if (allPicked) selectedCourse = guestCourses.join(', ');
 }
 
 // ── Availability ──
@@ -561,33 +567,60 @@ async function loadAvailability() {
   }
 }
 
-function loadCourses() {
+function loadCourses() { renderGuestCourses(); }
+
+function renderGuestCourses() {
+  const section = document.getElementById('courseSection');
   const list = document.getElementById('courseList');
   list.innerHTML = '';
+  guestCourses = [];
   selectedCourse = null;
-  document.getElementById('step2bNext').disabled = true;
 
-  // Use courses from the last availability response
-  if (!availableCourses.length) {
-    list.innerHTML = '<div class="error-msg">No courses available</div>';
+  if (!selectedPax || !availableCourses.length) {
+    section.style.display = 'none';
     return;
   }
 
-  availableCourses.forEach(c => {
-    const card = document.createElement('div');
-    card.className = 'session-card';
-    card.innerHTML = `
-      <div class="session-info"><h3>${c.name}</h3></div>
-      <div class="session-meta"><span class="price">RM ${c.price}</span><div style="font-size:0.75rem;color:var(--text-dim);margin-top:4px">per person</div></div>
-    `;
-    card.onclick = () => {
-      list.querySelectorAll('.session-card').forEach(el => el.classList.remove('selected'));
-      card.classList.add('selected');
-      selectedCourse = c.name;
-      updateStep2bBtn();
-    };
-    list.appendChild(card);
-  });
+  section.style.display = 'block';
+  guestCourses = new Array(selectedPax).fill(null);
+
+  for (let g = 0; g < selectedPax; g++) {
+    const row = document.createElement('div');
+    row.style.cssText = 'margin-bottom:16px';
+
+    const label = document.createElement('div');
+    label.style.cssText = 'color:var(--text-dim);font-size:0.8rem;letter-spacing:0.05em;margin-bottom:8px';
+    label.textContent = selectedPax === 1 ? 'YOUR COURSE' : `GUEST ${g + 1}`;
+    row.appendChild(label);
+
+    const options = document.createElement('div');
+    options.style.cssText = 'display:flex;flex-direction:column;gap:8px';
+
+    availableCourses.forEach(c => {
+      const btn = document.createElement('div');
+      btn.className = 'session-card';
+      btn.setAttribute('data-guest', g);
+      btn.setAttribute('data-course', c.name);
+      btn.innerHTML = `
+        <div class="session-info"><h3 style="font-size:0.9rem">${c.name}</h3></div>
+        <div class="session-meta"><span class="price">RM ${c.price}</span></div>
+      `;
+      btn.onclick = () => {
+        options.querySelectorAll('.session-card').forEach(el => el.classList.remove('selected'));
+        btn.classList.add('selected');
+        guestCourses[g] = c.name;
+        // Update selectedCourse as comma-separated string for the API
+        if (guestCourses.every(x => x)) {
+          selectedCourse = guestCourses.join(', ');
+        }
+        updateStep2bBtn();
+      };
+      options.appendChild(btn);
+    });
+
+    row.appendChild(options);
+    list.appendChild(row);
+  }
 }
 
 function formatTime(t) {
@@ -659,8 +692,8 @@ function showConfirmation(data, name, phone, email) {
       <div class="row"><span class="label">Session</span><span>${selectedSession.name} (${formatTime(selectedSession.startTime)})</span></div>
       <div class="row"><span class="label">Party Size</span><span>${selectedPax} ${selectedPax === 1 ? 'guest' : 'guests'}</span></div>
       <div class="row"><span class="label">Name</span><span>${name}</span></div>
-      ${selectedCourse ? `<div class="row"><span class="label">Course</span><span>${selectedCourse}</span></div>` : ''}
-      ${!isWL && selectedCourse ? `<div class="row"><span class="label">Price</span><span>RM ${(availableCourses.find(c=>c.name===selectedCourse)||{}).price || 0} /pax</span></div>` : ''}
+      ${guestCourses.length ? `<div class="row"><span class="label">Menu</span><span>${guestCourses.length === 1 ? guestCourses[0] : guestCourses.map((c,i) => `G${i+1}: ${c}`).join('<br>')}</span></div>` : ''}
+      ${!isWL && guestCourses.length ? `<div class="row"><span class="label">Total</span><span>RM ${guestCourses.reduce((sum, c) => sum + ((availableCourses.find(x=>x.name===c)||{}).price||0), 0)}</span></div>` : ''}
     </div>
   `;
   showStep('step4');
