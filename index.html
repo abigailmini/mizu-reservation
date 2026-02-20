@@ -182,6 +182,47 @@
   .form-group textarea { resize: vertical; min-height: 88px; }
   .form-group input::placeholder, .form-group textarea::placeholder { color: rgba(255,255,255,0.22); }
 
+  /* ── Terms & Conditions ── */
+  .tnc-section { margin-top: 4px; }
+  .tnc-toggle {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px;
+    cursor: pointer; transition: border-color 180ms ease;
+    font-size: 0.82rem; color: var(--text-dim); letter-spacing: 0.03em;
+  }
+  .tnc-toggle:hover { border-color: rgba(181,143,85,0.4); }
+  .tnc-toggle .tnc-arrow { transition: transform 200ms ease; font-size: 1.1rem; }
+  .tnc-toggle.open .tnc-arrow { transform: rotate(90deg); }
+  .tnc-toggle.open { border-color: rgba(181,143,85,0.3); border-radius: 10px 10px 0 0; border-bottom: none; }
+
+  .tnc-body {
+    max-height: 0; overflow: hidden; transition: max-height 350ms ease;
+    border: 1px solid transparent; border-radius: 0 0 10px 10px;
+  }
+  .tnc-body.open { max-height: 600px; border-color: var(--border); border-top: none; overflow-y: auto; }
+
+  .tnc-content {
+    padding: 14px 16px; font-size: 0.76rem; color: var(--text-dim); line-height: 1.7;
+  }
+  .tnc-content h4 { color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 0.9rem; font-weight: 400; margin: 12px 0 6px; }
+  .tnc-content h4:first-child { margin-top: 0; }
+  .tnc-content p { margin-bottom: 10px; }
+  .tnc-content strong { color: var(--text); font-weight: 400; }
+
+  .tnc-checkbox {
+    display: flex; align-items: flex-start; gap: 10px; margin-top: 14px;
+    font-size: 0.8rem; color: var(--text-dim); cursor: pointer; line-height: 1.4;
+  }
+  .tnc-checkbox input[type="checkbox"] {
+    appearance: none; -webkit-appearance: none; width: 18px; height: 18px; flex-shrink: 0;
+    border: 1.5px solid var(--border); border-radius: 4px; background: var(--bg-card);
+    cursor: pointer; position: relative; margin-top: 1px; transition: all 180ms ease;
+  }
+  .tnc-checkbox input[type="checkbox"]:checked { border-color: var(--gold); background: rgba(201,169,110,0.15); }
+  .tnc-checkbox input[type="checkbox"]:checked::after {
+    content: '✓'; position: absolute; top: -1px; left: 2px; font-size: 0.75rem; color: var(--gold);
+  }
+
   /* ── Payment Step ── */
   .payment-summary {
     background: linear-gradient(180deg, rgba(255,255,255,0.015), transparent);
@@ -370,8 +411,33 @@
       <label>Special Requests</label>
       <textarea id="guestNotes" placeholder="Allergies, celebrations, dietary requirements..."></textarea>
     </div>
+    <!-- T&C -->
+    <div class="tnc-section">
+      <div class="tnc-toggle" onclick="document.getElementById('tncBody').classList.toggle('open'); this.classList.toggle('open')">
+        <span>Terms & Conditions</span>
+        <span class="tnc-arrow">›</span>
+      </div>
+      <div class="tnc-body" id="tncBody">
+        <div class="tnc-content">
+          <h4>Reservation Terms & Conditions</h4>
+          <p><strong>1. Card Guarantee Required</strong><br>All reservations are secured via a card guarantee. No upfront deposit is required. The authorised amount will be released upon dining as scheduled. Cancellations or no-shows within 48 hours will result in forfeiture of the authorised amount.</p>
+          <p><strong>2. Changes to Reservation</strong><br>Any changes to reservation date or time must be informed at least 48 hours prior to the scheduled dining time. Failure to do so may result in cancellation of the booking and forfeiture of the card guarantee.</p>
+          <p><strong>3. Menu, Mains & Dietary Requests</strong><br>All changes to mains selection or dietary restrictions must be informed at least 2 days in advance. As we operate on a single tasting menu, last-minute requests may not be accommodated.</p>
+          <p><strong>4. Corkage Policy</strong><br>A corkage fee of RM200 applies to liquor brought by guests.</p>
+          <p><strong>5. Private Events</strong><br>For private dining or events, please WhatsApp us at <a href="https://wa.me/60129130952" style="color:var(--gold)">012-913 0952</a>.</p>
+          <p><strong>6. Age Policy</strong><br>To maintain the dining experience and privacy of all guests, children below 6 years old are not permitted. Guests aged 6 years and above are welcome but must order one full course menu.</p>
+          <h4>Time & Table Policy</h4>
+          <p>• Tables will be held for 30 minutes maximum from the reservation time.<br>• Each reservation is allocated 2 hours of dining time.<br>• Kindly arrive and depart promptly to ensure a smooth dining flow for all guests.</p>
+        </div>
+      </div>
+      <label class="tnc-checkbox">
+        <input type="checkbox" id="tncAgree" onchange="updateStep3Btn()">
+        <span>I have read and agree to the Terms & Conditions</span>
+      </label>
+    </div>
+
     <div id="formError" class="error-msg" style="display:none"></div>
-    <button class="btn primary" id="step3Next" onclick="goStep4()">Continue to Payment</button>
+    <button class="btn primary" id="step3Next" disabled onclick="goStep4()">Continue to Payment</button>
   </div>
 
   <!-- Step 4: Payment -->
@@ -502,6 +568,8 @@ function goStep4() {
 function updateStep3Btn() {
   const btn = document.getElementById('step3Next');
   btn.textContent = isWaitlist ? 'Join Waitlist' : 'Continue to Payment';
+  const agreed = document.getElementById('tncAgree').checked;
+  btn.disabled = !agreed;
 }
 
 // ── Date Picker ──
