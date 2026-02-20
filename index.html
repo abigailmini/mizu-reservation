@@ -345,13 +345,23 @@
     <div id="sessionsLoading" class="loading">Loading availability...</div>
     <div class="session-list" id="sessionList"></div>
     <div id="sessionError" class="error-msg" style="display:none"></div>
-    <button class="btn primary" id="step2Next" disabled onclick="goStep3()">Continue</button>
+    <button class="btn primary" id="step2Next" disabled onclick="goStep2b()">Continue</button>
+  </div>
+
+  <!-- Step 2b: Course Selection -->
+  <div class="step" id="step2b">
+    <div class="step-header">
+      <button class="back-btn" onclick="goStep2()">←</button>
+      <span class="step-title">Select Course</span>
+    </div>
+    <div class="session-list" id="courseList"></div>
+    <button class="btn primary" id="step2bNext" disabled onclick="goStep3()">Continue</button>
   </div>
 
   <!-- Step 3: Details -->
   <div class="step" id="step3">
     <div class="step-header">
-      <button class="back-btn" onclick="goStep2()">←</button>
+      <button class="back-btn" onclick="goStep2b()">←</button>
       <span class="step-title">Your Details</span>
     </div>
 
@@ -385,13 +395,16 @@
 </div>
 
 <script>
-const API_URL_FILE = 'https://gist.githubusercontent.com/abigailmini/GIST_ID/raw/mizu-api-url.txt';
-let API_BASE = 'https://2eb712e0c8f0d213-60-50-218-160.serveousercontent.com'; // serveo tunnel
+const MIZU_GIST = 'https://gist.githubusercontent.com/abigailmini/4f8c9f567fa8a13d002fd5a2b703e8ed/raw/mizu-api-url.txt';
+const FALLBACK_API = 'https://9538cb73ceb40a2e-60-50-218-160.serveousercontent.com';
+let API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.endsWith('.serveousercontent.com')) ? `${window.location.origin}` : FALLBACK_API;
 
 // State
 let selectedDate = null;
 let selectedPax = null;
 let selectedSession = null;
+let selectedCourse = null;
+let availableCourses = [];
 let availabilityData = null;
 let blockedDates = [];
 let isWaitlist = false;
@@ -415,7 +428,7 @@ function showStep(id) {
 }
 
 function goLanding() {
-  selectedDate = null; selectedPax = null; selectedSession = null;
+  selectedDate = null; selectedPax = null; selectedSession = null; selectedCourse = null;
   document.getElementById('landing').style.display = 'flex';
   document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
 }
@@ -423,6 +436,7 @@ function goLanding() {
 function startReservation() { showStep('step1'); initDatePicker(); initPaxSelector(); }
 function goStep1() { showStep('step1'); }
 function goStep2() { showStep('step2'); loadAvailability(); }
+function goStep2b() { showStep('step2b'); loadCourses(); }
 function goStep3() { showStep('step3'); }
 
 // ── Date Picker ──
@@ -507,6 +521,7 @@ async function loadAvailability() {
       return;
     }
 
+    availableCourses = availabilityData.courses || [];
     availabilityData.sessions.forEach(s => {
       const isFull = s.remaining < selectedPax;
       const card = document.createElement('div');
@@ -520,7 +535,7 @@ async function loadAvailability() {
           <div class="time">${formatTime(s.startTime)} — ${formatTime(s.endTime)}</div>
         </div>
         <div class="session-meta">
-          <div class="price">RM ${s.price}</div>
+          ${s.price ? `<div class="price">RM ${s.price}</div>` : ''}
           ${isFull
             ? '<div class="waitlist-tag">Join Waitlist</div>'
             : `<div class="${seatsClass}">${s.remaining} seats left</div>`
@@ -544,6 +559,35 @@ async function loadAvailability() {
     error.textContent = 'Unable to load availability. Please try again.';
     error.style.display = 'block';
   }
+}
+
+function loadCourses() {
+  const list = document.getElementById('courseList');
+  list.innerHTML = '';
+  selectedCourse = null;
+  document.getElementById('step2bNext').disabled = true;
+
+  // Use courses from the last availability response
+  if (!availableCourses.length) {
+    list.innerHTML = '<div class="error-msg">No courses available</div>';
+    return;
+  }
+
+  availableCourses.forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'session-card';
+    card.innerHTML = `
+      <div class="session-info"><h3>${c.name}</h3></div>
+      <div class="session-meta"><span class="price">RM ${c.price}</span><div style="font-size:0.75rem;color:var(--text-dim);margin-top:4px">per person</div></div>
+    `;
+    card.onclick = () => {
+      list.querySelectorAll('.session-card').forEach(el => el.classList.remove('selected'));
+      card.classList.add('selected');
+      selectedCourse = c.name;
+      document.getElementById('step2bNext').disabled = false;
+    };
+    list.appendChild(card);
+  });
 }
 
 function formatTime(t) {
@@ -581,6 +625,7 @@ async function submitReservation() {
       body: JSON.stringify({
         date: selectedDate,
         session: selectedSession.name,
+        course: selectedCourse,
         name, phone, email,
         pax: selectedPax,
         notes
@@ -614,7 +659,8 @@ function showConfirmation(data, name, phone, email) {
       <div class="row"><span class="label">Session</span><span>${selectedSession.name} (${formatTime(selectedSession.startTime)})</span></div>
       <div class="row"><span class="label">Party Size</span><span>${selectedPax} ${selectedPax === 1 ? 'guest' : 'guests'}</span></div>
       <div class="row"><span class="label">Name</span><span>${name}</span></div>
-      ${!isWL ? `<div class="row"><span class="label">Price</span><span>RM ${selectedSession.price} /pax</span></div>` : ''}
+      ${selectedCourse ? `<div class="row"><span class="label">Course</span><span>${selectedCourse}</span></div>` : ''}
+      ${!isWL && selectedCourse ? `<div class="row"><span class="label">Price</span><span>RM ${(availableCourses.find(c=>c.name===selectedCourse)||{}).price || 0} /pax</span></div>` : ''}
     </div>
   `;
   showStep('step4');
@@ -626,14 +672,146 @@ function formatDisplayDate(dateStr) {
 }
 
 // ── Init ──
+let stripe = null;
+let stripeElements = null;
+let cardElement = null;
 (async function init() {
+  // Auto-discover API URL from gist (if on GitHub Pages)
+  if (window.location.hostname.endsWith('.github.io')) {
+    try {
+      const r = await fetch(MIZU_GIST + '?t=' + Date.now());
+      const url = (await r.text()).trim();
+      if (url.startsWith('https://')) API_BASE = url;
+    } catch(e) { console.log('Gist fetch failed, using fallback'); }
+  }
+  console.log('API_BASE:', API_BASE);
+
   // Load config to get blocked dates
   try {
     const res = await fetch(`${API_BASE}/config`, { headers: { 'Bypass-Tunnel-Reminder': 'true' } });
     const config = await res.json();
     blockedDates = (config.blocked || []).map(b => b['Blocked Date']);
   } catch(e) { console.log('Config load failed, using defaults'); }
+
+  // Check if Stripe is configured on the server and load Stripe.js if so
+  try {
+    const r = await fetch(`${API_BASE}/stripe-key`);
+    const info = await r.json();
+    if (info.publishableKey) {
+      const s = document.createElement('script');
+      s.src = 'https://js.stripe.com/v3/';
+      document.head.appendChild(s);
+      s.onload = () => {
+        stripe = Stripe(info.publishableKey);
+      };
+    }
+  } catch(e) { console.log('Stripe key load failed'); }
 })();
+
+// Modify submitReservation to support Stripe Elements when available
+async function submitReservation() {
+  const name = document.getElementById('guestName').value.trim();
+  const phone = document.getElementById('guestPhone').value.trim();
+  const email = document.getElementById('guestEmail').value.trim();
+  const notes = document.getElementById('guestNotes').value.trim();
+  const error = document.getElementById('formError');
+  error.style.display = 'none';
+
+  if (!name || !phone || !email) {
+    error.textContent = 'Please fill in all required fields.';
+    error.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+
+  try {
+    const endpoint = isWaitlist ? '/waitlist' : '/book';
+
+    const payload = {
+      date: selectedDate,
+      session: selectedSession.name,
+      course: selectedCourse,
+      name, phone, email,
+      pax: selectedPax,
+      notes
+    };
+
+    // If Stripe is available and this is a confirmed booking (not waitlist), collect card
+    if (stripe && !isWaitlist) {
+      // Create payment method using Stripe Elements or fallback to Stripe Payment Request
+      // For brevity: use stripe.createPaymentMethod with a card element if present
+      if (!cardElement) {
+        // create a simple mounted card element in a prompt-like flow
+        const container = document.createElement('div');
+        container.style.position = 'fixed';
+        container.style.left = '0';
+        container.style.right = '0';
+        container.style.top = '0';
+        container.style.bottom = '0';
+        container.style.background = 'rgba(0,0,0,0.6)';
+        container.style.display = 'flex';
+        container.style.alignItems = 'center';
+        container.style.justifyContent = 'center';
+        container.innerHTML = `
+          <div style="width:320px;background:#0A0A0A;padding:16px;border-radius:8px;">
+            <div style="color:#E8E8E8;margin-bottom:8px">Card details (RM100 hold)</div>
+            <div id="card-placeholder" style="background:#141414;padding:12px;border-radius:6px;border:1px solid #2A2A2A"></div>
+            <div style="display:flex;gap:8px;margin-top:12px;">
+              <button id="cardCancel" class="btn">Cancel</button>
+              <button id="cardPay" class="btn primary">Authorize RM100</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(container);
+        stripeElements = stripe.elements();
+        cardElement = stripeElements.create('card', { style: { base: { color: '#E8E8E8', '::placeholder': { color: '#888' } } } });
+        cardElement.mount('#card-placeholder');
+        document.getElementById('cardCancel').onclick = () => { container.remove(); btn.disabled = false; btn.textContent = 'Confirm Reservation'; };
+        document.getElementById('cardPay').onclick = async () => {
+          document.getElementById('cardPay').disabled = true; document.getElementById('cardPay').textContent = 'Authorizing...';
+          const pmResult = await stripe.createPaymentMethod({ type: 'card', card: cardElement, billing_details: { name, email, phone } });
+          if (pmResult.error) {
+            error.textContent = pmResult.error.message; error.style.display = 'block'; btn.disabled = false; btn.textContent = 'Confirm Reservation'; container.remove(); return;
+          }
+          payload.createHold = true;
+          payload.payment_method = pmResult.paymentMethod.id;
+
+          try {
+            const res = await fetch(`${API_BASE}${endpoint}`, {
+              method: 'POST', headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' }, body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+            container.remove(); showConfirmation(data, name, phone, email);
+          } catch (e) {
+            error.textContent = e.message || 'Payment failed'; error.style.display = 'block';
+          }
+        };
+        return;
+      }
+    }
+
+    // Fallback: no stripe or waitlist
+    const res = await fetch(`${API_BASE}${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    showConfirmation(data, name, phone, email);
+  } catch (e) {
+    error.textContent = e.message || 'Something went wrong. Please try again.';
+    error.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Confirm Reservation';
+  }
+}
 </script>
 </body>
 </html>
