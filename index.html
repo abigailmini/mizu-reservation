@@ -875,6 +875,14 @@ async function processPayment() {
 
     const data = await res.json();
     if (data.error) throw new Error(data.error);
+
+    // Handle 3D Secure if needed
+    if (data.requires_action && data.client_secret) {
+      const result = await stripe.handleCardAction(data.client_secret);
+      if (result.error) throw new Error(result.error.message);
+      // 3DS passed — the PaymentIntent is now confirmed server-side
+    }
+
     showSuccess(data);
   } catch (e) {
     error.textContent = e.message || 'Payment failed. Please try again.';
