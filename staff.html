@@ -143,7 +143,7 @@ const SESSIONS = [
 let currentDate = new Date();
 currentDate.setHours(0,0,0,0);
 
-function dateStr(d) { return d.toISOString().split('T')[0]; }
+function dateStr(d) { const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${dd}`; }
 function isToday(d) { const t = new Date(); t.setHours(0,0,0,0); return d.getTime() === t.getTime(); }
 
 function navDate(dir) {
