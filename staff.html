@@ -177,6 +177,8 @@ async function loadData() {
     const avail = await availRes.json();
     const data = await resRes.json();
     render(avail, data.reservations || []); attachRowListeners();
+    // defensive retry: if reservations exist but no guest rows rendered, retry once after short delay
+    setTimeout(()=>{ try{ if ((data.reservations||[]).length>0 && document.querySelectorAll(".guest-row").length===0){ console.log("staff: retrying render due to missing rows"); render(avail, data.reservations || []); attachRowListeners(); } }catch(e){console.log("staff: retry failed", e.message);} }, 250);
     document.getElementById('lastUpdate').textContent = ` Updated ${new Date().toLocaleTimeString('en-MY', { hour: '2-digit', minute: '2-digit' })}`;
   } catch(e) {
     document.getElementById('content').innerHTML = `<div class="loading" style="color:#B85450">Failed to load. <a href="#" onclick="loadData();return false" style="color:var(--gold)">Retry</a></div>`;
