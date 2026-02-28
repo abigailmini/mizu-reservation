@@ -266,6 +266,10 @@ function render(avail, reservations) {
               <span class="guest-course">${courseDisplay || '—'}</span>
               <span class="guest-phone">${r.phone || ''}</span>
             </div>
+            <div class="guest-inline-extra" style="margin-top:6px">
+              <div class="guest-names-inline" style="font-size:0.72rem;color:var(--dim)">${guestNamesHTML ? guestNamesHTML.replace(/<br>/g, ', ') : ''}</div>
+              <div class="guest-note-inline" style="font-size:0.72rem;color:var(--dim);margin-top:4px">${r.notes ? (r.notes.length>80 ? r.notes.substring(0,77)+'...' : r.notes) : ''}</div>
+            </div>
           </div>
           <div class="guest-tags">
             ${hasAllergy ? '<span class="tag allergy">⚠ ALLERGY</span>' : ''}
