@@ -321,6 +321,18 @@ function copyEmail(e) { if (!e) return; navigator.clipboard && navigator.clipboa
   loadData();
   // Auto-refresh every 60s
   setInterval(loadData, 60000);
+
+// Event delegation for guest row clicks (replaces inline onclick handlers)
+document.getElementById('content').addEventListener('click', function(e){
+  const row = e.target.closest('.guest-row');
+  if (!row) return;
+  const id = row.getAttribute('data-detail-id');
+  if (!id) return;
+  // If the click was on a button inside the row, ignore
+  if (e.target.tagName.toLowerCase() === 'button' || e.target.closest('button')) return;
+  toggleDetail(id);
+});
+
 })();
 </script>
 </body>
