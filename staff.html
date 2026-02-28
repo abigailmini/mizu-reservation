@@ -296,7 +296,20 @@ function render(avail, reservations) {
   });
 
   document.getElementById('content').innerHTML = html;
+  // Attach direct listeners to guest rows to ensure clicks work on mobile
+  attachRowListeners();
 }
+
+function attachRowListeners() {
+  document.querySelectorAll('.guest-row').forEach(row => {
+    row.removeEventListener('click', row._glistener);
+    const id = row.getAttribute('data-detail-id');
+    const fn = function(e) { if (e.target.tagName.toLowerCase()==='button' || e.target.closest('button')) return; toggleDetail(id); }
+    row._glistener = fn;
+    row.addEventListener('click', fn);
+  });
+}
+
 
 function toggleDetail(id) {
   const el = document.getElementById(id);
