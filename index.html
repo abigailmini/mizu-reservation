@@ -880,18 +880,24 @@ function renderGuestNamesInputs() {
   const container = document.getElementById('guestNamesList');
   container.innerHTML = '';
   if (!selectedPax) return;
-  for (let i = 1; i <= selectedPax; i++) {
-    const div = document.createElement('div'); div.className = 'form-group';
-    div.innerHTML = `<label>Guest ${i} Name</label><input type="text" id="guestName-${i}" placeholder="Guest ${i} name">`;
-    container.appendChild(div);
-  }
-  // auto-fill Guest 1
+  // Single combined field for guest names (comma or newline separated)
+  const div = document.createElement('div'); div.className = 'form-group';
+  div.innerHTML = `
+    <label>Guest Names (one field) — list names separated by commas</label>
+    <textarea id="guestNamesCombined" placeholder="e.g. Alice, Bob, Charlie" rows="3"></textarea>
+    <div style="font-size:0.78rem;color:var(--text-dim);margin-top:6px">You can enter all guest names in a single field. If left blank, we'll only record the booker name.</div>
+  `;
+  container.appendChild(div);
+  // auto-fill first guest into combined field
   syncGuest1();
 }
 
 function syncGuest1() {
   const v = document.getElementById('guestName').value || '';
-  const el = document.getElementById('guestName-1'); if (el) el.value = v;
+  const el = document.getElementById('guestNamesCombined'); if (el) {
+    const existing = el.value.split(/[\n,]+/).map(x=>x.trim()).filter(Boolean);
+    if (existing.length === 0) el.value = v; else { existing[0]=v; el.value = existing.join(', '); }
+  }
 }
 
 // ── Payment Summary ──
@@ -955,11 +961,11 @@ async function processPayment() {
     // Prepare addons and guestNames
     const addons = {};
     Object.entries(addonCounts).forEach(([k,v])=>{ if (v>0) addons[k]=v; });
-    const guestNames = [];
-    for (let i=1;i<= (selectedPax||0); i++) {
-      const g = document.getElementById(`guestName-${i}`);
-      guestNames.push(g ? (g.value || '') : '');
-    }
+    let guestNames = [];
+    const combined = (document.getElementById('guestNamesCombined') && document.getElementById('guestNamesCombined').value) || '';
+    guestNames = combined.split(/[\n,]+/).map(x=>x.trim()).filter(Boolean).slice(0, selectedPax || 0);
+    // pad with empty strings to match pax if needed
+    while (guestNames.length < (selectedPax||0)) guestNames.push('');
 
     // Submit booking with payment
     const res = await fetch(`${API_BASE}/book`, {
@@ -1004,11 +1010,10 @@ async function submitWaitlist() {
   // Prepare addons and guestNames
   const addons = {};
   Object.entries(addonCounts).forEach(([k,v])=>{ if (v>0) addons[k]=v; });
-  const guestNames = [];
-  for (let i=1;i<= (selectedPax||0); i++) {
-    const g = document.getElementById(`guestName-${i}`);
-    guestNames.push(g ? (g.value || '') : '');
-  }
+  let guestNames = [];
+  const combined = (document.getElementById('guestNamesCombined') && document.getElementById('guestNamesCombined').value) || '';
+  guestNames = combined.split(/[\n,]+/).map(x=>x.trim()).filter(Boolean).slice(0, selectedPax || 0);
+  while (guestNames.length < (selectedPax||0)) guestNames.push('');
 
   try {
     const res = await fetch(`${API_BASE}/waitlist`, {
