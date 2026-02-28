@@ -77,7 +77,7 @@
 
   .step-header { display: flex; align-items: center; gap: 12px; }
   .back-btn { background: none; border: none; color: var(--text-dim); font-size: 1.2rem; cursor: pointer; padding: 6px 8px; }
-  .step-title { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: var(--gold); font-weight: 400; }
+  .step-title { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: var(--gold); }
 
   /* ── Progress Bar ── */
   .progress-bar { display: flex; gap: 6px; margin-bottom: 4px; }
@@ -263,6 +263,9 @@
   .badge-row.powered { font-size: 0.72rem; color: var(--text-dim); gap: 6px; }
   .badge-row.powered strong { color: var(--text); font-weight: 400; }
 
+  .badge-row.powered { font-size: 0.72rem; color: var(--text-dim); gap: 6px; }
+  .badge-row.powered strong { color: var(--text); font-weight: 400; }
+
   /* ── Success Page ── */
   .success-page { text-align: center; padding: 50px 0 30px; animation: fadeIn 500ms ease both; }
   @keyframes fadeIn { from { opacity:0; transform: translateY(10px);} to { opacity:1; transform:none; } }
@@ -312,6 +315,13 @@
 
   .error-msg { color: #C97A4E; font-size: 0.9rem; text-align: center; padding: 8px; }
   .section-label { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; }
+
+  /* Add-ons styling */
+  .addons-section { margin-top: 16px; display:flex; flex-direction:column; gap:8px; }
+  .addon-card { display:flex; align-items:center; justify-content:space-between; padding:12px; border:1px solid var(--border); border-radius:10px; background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent); }
+  .addon-info { display:flex; flex-direction:column; }
+  .addon-name { font-size:0.95rem; color:var(--text); }
+  .addon-price { font-size:0.82rem; color:var(--gold); }
 
   @media (max-width:480px) {
     .container { padding: 18px; }
@@ -384,6 +394,10 @@
       <div class="section-label" style="margin-top:20px">Select Courses</div>
       <div id="courseList" style="display:flex;flex-direction:column;gap:10px"></div>
       <div class="course-remaining" id="courseRemaining"></div>
+
+      <!-- Add-ons (À La Carte) -->
+      <div class="section-label" style="margin-top:14px">Add-ons (À La Carte)</div>
+      <div class="addons-section" id="addonsList"></div>
     </div>
     <button class="btn primary" id="step2bNext" disabled onclick="goStep3()">Continue</button>
   </div>
@@ -397,7 +411,7 @@
     </div>
     <div class="form-group">
       <label>Name *</label>
-      <input type="text" id="guestName" placeholder="Full name" required>
+      <input type="text" id="guestName" placeholder="Full name" required oninput="syncGuest1()">
     </div>
     <div class="form-group">
       <label>Phone *</label>
@@ -407,6 +421,11 @@
       <label>Email *</label>
       <input type="email" id="guestEmail" placeholder="your@email.com" required>
     </div>
+
+    <!-- Guest Names -->
+    <div class="section-label" style="margin-top:8px">Guest Names (optional)</div>
+    <div id="guestNamesList" style="display:flex;flex-direction:column;gap:8px"></div>
+
     <div class="form-group">
       <label>Special Requests</label>
       <textarea id="guestNotes" placeholder="Allergies, celebrations, dietary requirements..."></textarea>
@@ -528,6 +547,17 @@ let guestCourses = [], availableCourses = [], availabilityData = null, blockedDa
 let isWaitlist = false;
 let stripe = null, stripeElements = null, cardElement = null;
 
+// Add-ons data
+const ADDONS = [
+  { key: 'Extra Uni', price: 68 },
+  { key: 'Extra Otoro', price: 58 },
+  { key: 'Extra A5 Wagyu', price: 88 },
+  { key: 'Truffle Chawanmushi', price: 38 },
+  { key: 'Sake Pairing', price: 120 },
+  { key: 'Soft Drink Pairing', price: 30 }
+];
+let addonCounts = {}; // { 'Extra Uni': 0 }
+
 // ── Navigation ──
 function showStep(id) {
   document.querySelectorAll('.step, .landing').forEach(el => { el.classList.remove('active'); if (el.classList.contains('landing')) el.style.display = 'none'; });
@@ -547,7 +577,7 @@ function startReservation() { showStep('step1'); initDatePicker(); }
 function goStep1() { showStep('step1'); }
 function goStep2() { showStep('step2'); loadAvailability(); }
 function goStep2b() { showStep('step2b'); initPaxSelector(); loadCourses(); updateStep2bBtn(); }
-function goStep3() { showStep('step3'); updateStep3Btn(); }
+function goStep3() { showStep('step3'); updateStep3Btn(); renderGuestNamesInputs(); }
 
 function goStep4() {
   const name = document.getElementById('guestName').value.trim();
@@ -763,6 +793,8 @@ function renderGuestCourses() {
     `;
     list.appendChild(card);
   });
+  // init addons UI
+  initAddonsUI();
   updateCourseUI();
 }
 
@@ -811,17 +843,75 @@ function updateCourseUI() {
   selectedCourse = total === selectedPax ? guestCourses.join(', ') : null;
 }
 
+// ── Add-ons UI ──
+function initAddonsUI() {
+  const container = document.getElementById('addonsList');
+  container.innerHTML = '';
+  addonCounts = {};
+  ADDONS.forEach(a => { addonCounts[a.key] = 0; const id = `addon-${a.key.replace(/\s/g,'-')}`;
+    const card = document.createElement('div'); card.className = 'addon-card'; card.id = id;
+    card.innerHTML = `
+      <div class="addon-info">
+        <div class="addon-name">${a.key}</div>
+        <div class="addon-price">RM ${a.price}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="counter-btn" onclick="adjustAddon('${a.key}', -1)">−</button>
+        <div class="counter-val" id="${id}-val">0</div>
+        <button class="counter-btn" onclick="adjustAddon('${a.key}', 1)">+</button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function adjustAddon(name, delta) {
+  const cur = addonCounts[name] || 0;
+  const n = cur + delta;
+  if (n < 0) return;
+  addonCounts[name] = n;
+  const id = `addon-${name.replace(/\s/g,'-')}-val`;
+  const el = document.getElementById(id);
+  if (el) el.textContent = n;
+}
+
+// ── Guest Names Inputs ──
+function renderGuestNamesInputs() {
+  const container = document.getElementById('guestNamesList');
+  container.innerHTML = '';
+  if (!selectedPax) return;
+  for (let i = 1; i <= selectedPax; i++) {
+    const div = document.createElement('div'); div.className = 'form-group';
+    div.innerHTML = `<label>Guest ${i} Name</label><input type="text" id="guestName-${i}" placeholder="Guest ${i} name">`;
+    container.appendChild(div);
+  }
+  // auto-fill Guest 1
+  syncGuest1();
+}
+
+function syncGuest1() {
+  const v = document.getElementById('guestName').value || '';
+  const el = document.getElementById('guestName-1'); if (el) el.value = v;
+}
+
 // ── Payment Summary ──
 function renderPaymentSummary() {
   const holdTotal = selectedPax * 100;
   document.getElementById('holdAmount').textContent = holdTotal;
   const coursePrice = (name) => (availableCourses.find(x => x.name === name) || {}).price || 0;
+  // addons total and lines
+  const addonLines = Object.entries(addonCounts).filter(([,v])=>v>0).map(([name,qty]) => {
+    const price = (ADDONS.find(a=>a.key===name)||{}).price||0;
+    return `<div class="row"><span class="label">${name}</span><span>×${qty} · RM ${price} each</span></div>`;
+  }).join('');
+
   document.getElementById('paymentSummary').innerHTML = `
     <div class="summary-title">Reservation Summary</div>
     <div class="row"><span class="label">Date</span><span>${formatDisplayDate(selectedDate)}</span></div>
     <div class="row"><span class="label">Session</span><span>${selectedSession.name} · ${formatTime(selectedSession.startTime)}</span></div>
     <div class="row"><span class="label">Guests</span><span>${selectedPax}</span></div>
     ${Object.entries(courseCounts).filter(([,v])=>v>0).map(([name,count]) => `<div class="row"><span class="label">${name}</span><span>×${count} · RM ${coursePrice(name)} each</span></div>`).join('')}
+    ${addonLines}
     <div class="row total"><span class="label">Card Hold (refundable)</span><span>RM ${holdTotal}</span></div>
   `;
 }
@@ -862,6 +952,15 @@ async function processPayment() {
     });
     if (pmResult.error) { throw new Error(pmResult.error.message); }
 
+    // Prepare addons and guestNames
+    const addons = {};
+    Object.entries(addonCounts).forEach(([k,v])=>{ if (v>0) addons[k]=v; });
+    const guestNames = [];
+    for (let i=1;i<= (selectedPax||0); i++) {
+      const g = document.getElementById(`guestName-${i}`);
+      guestNames.push(g ? (g.value || '') : '');
+    }
+
     // Submit booking with payment
     const res = await fetch(`${API_BASE}/book`, {
       method: 'POST',
@@ -870,6 +969,7 @@ async function processPayment() {
         date: selectedDate, session: selectedSession.name, course: selectedCourse,
         name, phone, email, pax: selectedPax, notes,
         createHold: true, payment_method: pmResult.paymentMethod.id,
+        addons: JSON.stringify(addons), guestNames: JSON.stringify(guestNames),
         return_url: window.location.origin + window.location.pathname + '?payment_status=complete'
       })
     });
@@ -901,11 +1001,20 @@ async function submitWaitlist() {
   const btn = document.getElementById('step3Next');
   btn.disabled = true; btn.textContent = 'Submitting...';
 
+  // Prepare addons and guestNames
+  const addons = {};
+  Object.entries(addonCounts).forEach(([k,v])=>{ if (v>0) addons[k]=v; });
+  const guestNames = [];
+  for (let i=1;i<= (selectedPax||0); i++) {
+    const g = document.getElementById(`guestName-${i}`);
+    guestNames.push(g ? (g.value || '') : '');
+  }
+
   try {
     const res = await fetch(`${API_BASE}/waitlist`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
-      body: JSON.stringify({ date: selectedDate, session: selectedSession.name, course: selectedCourse, name, phone, email, pax: selectedPax, notes })
+      body: JSON.stringify({ date: selectedDate, session: selectedSession.name, course: selectedCourse, name, phone, email, pax: selectedPax, notes, addons: JSON.stringify(addons), guestNames: JSON.stringify(guestNames) })
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
@@ -923,13 +1032,32 @@ function showSuccess(data) {
   const coursePrice = (name) => (availableCourses.find(x => x.name === name) || {}).price || 0;
   const gName = document.getElementById('guestName').value.trim();
 
+  // Build addons display
+  const addonLines = Object.entries(addonCounts).filter(([,v])=>v>0).map(([name,qty]) => {
+    const price = (ADDONS.find(a=>a.key===name)||{}).price||0;
+    return `<div class="detail-row"><span class="label">${name}</span><span class="value">×${qty} · RM ${price} each</span></div>`;
+  }).join('');
+
+  // guest names display
+  let guestNamesHTML = '';
+  const gnames = [];
+  for (let i=1;i<= (selectedPax||0); i++) {
+    const g = document.getElementById(`guestName-${i}`);
+    if (g && g.value.trim()) { gnames.push(g.value.trim()); }
+  }
+  if (gnames.length) {
+    guestNamesHTML = `<div class="detail-row"><span class="label">Guest Names</span><span class="value">${gnames.map((x,i)=>`${i+1}. ${x}`).join('<br>')}</span></div>`;
+  }
+
   document.getElementById('successSub').innerHTML = `Thank you, ${gName}.<br>We look forward to welcoming you.`;
   document.getElementById('successHold').textContent = holdTotal;
   document.getElementById('successDetails').innerHTML = `
     <div class="detail-row"><span class="label">Date</span><span class="value">${formatDisplayDate(selectedDate)}</span></div>
     <div class="detail-row"><span class="label">Session</span><span class="value">${selectedSession.name}<br>${formatTime(selectedSession.startTime)} — ${formatTime(selectedSession.endTime)}</span></div>
     <div class="detail-row"><span class="label">Guests</span><span class="value">${selectedPax}</span></div>
+    ${guestNamesHTML}
     ${Object.entries(courseCounts).filter(([,v])=>v>0).map(([name,count]) => `<div class="detail-row"><span class="label">${name}</span><span class="value">×${count} · RM ${coursePrice(name)} each</span></div>`).join('')}
+    ${addonLines}
     <div class="detail-row"><span class="label">Card Hold</span><span class="value" style="color:var(--gold)">RM ${holdTotal}</span></div>
   `;
   document.getElementById('successNote').style.display = 'block';
@@ -942,7 +1070,7 @@ function showWaitlistSuccess() {
   document.querySelector('#step5 .success-icon svg polyline').setAttribute('points', '');
   document.querySelector('#step5 .success-icon').innerHTML = '<span style="font-size:2rem">⏳</span>';
   document.querySelector('#step5 h2').textContent = 'You\'re on the Waitlist';
-  document.getElementById('successSub').innerHTML = `Thank you, ${name}.<br>We'll contact you as soon as a spot opens up.`;
+  document.getElementById('successSub').innerHTML = `Thank you, ${name}.<br>We\'ll contact you as soon as a spot opens up.`;
   document.getElementById('successDetails').innerHTML = `
     <div class="detail-row"><span class="label">Date</span><span class="value">${formatDisplayDate(selectedDate)}</span></div>
     <div class="detail-row"><span class="label">Session</span><span class="value">${selectedSession.name} · ${formatTime(selectedSession.startTime)}</span></div>
@@ -1004,6 +1132,7 @@ function formatDisplayDate(dateStr) {
       <div class="detail-row"><span class="label">Reference</span><span class="value" style="font-size:0.75rem">${piId || 'N/A'}</span></div>
     `;
     document.getElementById('successNote').innerHTML = '<strong>📧 Confirmation details sent to your email.</strong><br>A temporary card hold has been placed to secure your reservation.';
+    document.getElementById('successHold').textContent = (selectedPax || 1) * 100;
     document.querySelector('#step5 h2').textContent = 'Reservation Confirmed';
     showStep('step5');
   }

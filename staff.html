@@ -90,6 +90,14 @@
   .notes-detail { display: none; padding: 8px 16px 12px 56px; font-size: 0.76rem; color: var(--dim); line-height: 1.5; background: rgba(255,255,255,0.01); border-bottom: 1px solid rgba(255,255,255,0.03); }
   .notes-detail.show { display: block; }
 
+  /* Detail panel */
+  .detail-panel { display:none; padding:12px 16px; background:linear-gradient(180deg, rgba(0,0,0,0.12), transparent); border:1px solid rgba(201,169,110,0.06); margin:8px 12px 18px; border-radius:10px; color:var(--text); }
+  .detail-panel.show { display:block; }
+  .detail-row { display:flex; justify-content:space-between; gap:8px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.02); }
+  .detail-row .label { color:var(--dim); font-size:0.78rem; }
+  .detail-row .value { color:var(--text); font-size:0.9rem; text-align:right; }
+  .detail-allergy { color:var(--red); font-weight:600; }
+
   /* Empty state */
   .empty-session { padding: 24px 16px; text-align: center; color: var(--dim); font-size: 0.85rem; }
 
@@ -234,7 +242,21 @@ function render(avail, reservations) {
           ? courses.join(', ')
           : [...new Set(courses)].map(c => { const cnt = courses.filter(x=>x===c).length; return cnt > 1 ? `${c} ×${cnt}` : c; }).join(', ');
 
-        html += `<div class="guest-row" ${hasNotes ? `onclick="document.getElementById('notes-${i}-${sess.name.replace(/\\s/g,'')}').classList.toggle('show')" style="cursor:pointer"` : ''}>
+        // Parse addons and guestNames if present
+        let addonsHTML = '';
+        try {
+          const addons = r.addons ? (typeof r.addons === 'string' ? JSON.parse(r.addons) : r.addons) : {};
+          const addonEntries = Object.entries(addons || {}).filter(([,v])=>v>0);
+          if (addonEntries.length) addonsHTML = addonEntries.map(a=>`${a[0]} ×${a[1]}`).join('<br>');
+        } catch(e) { addonsHTML = ''; }
+
+        let guestNamesHTML = '';
+        try {
+          const gnames = r.guestNames ? (typeof r.guestNames === 'string' ? JSON.parse(r.guestNames) : r.guestNames) : [];
+          if (gnames && gnames.length) guestNamesHTML = gnames.map((n,idx)=>`${idx+1}. ${n}`).join('<br>');
+        } catch(e) { guestNamesHTML = ''; }
+
+        html += `<div class="guest-row" onclick="toggleDetail('detail-${sess.name.replace(/\\s/g,'')}-${i}')" style="cursor:pointer">
           <div class="guest-num">${i + 1}</div>
           <div class="guest-info">
             <div class="guest-name">${r.name || 'Guest'} <span style="color:var(--dim);font-size:0.78rem">×${r.pax || 1}</span></div>
@@ -249,6 +271,21 @@ function render(avail, reservations) {
             ${hasPaid ? '<span class="tag paid">💳</span>' : ''}
           </div>
         </div>`;
+
+        // Detail panel (hidden) — shows full details
+        html += `<div class="detail-panel" id="detail-${sess.name.replace(/\s/g,'')}-${i}">
+          <div class="detail-row"><div class="label">Booker</div><div class="value">${r.name || '—'}</div></div>
+          <div class="detail-row"><div class="label">Phone</div><div class="value">${r.phone || '—'}</div></div>
+          <div class="detail-row"><div class="label">Email</div><div class="value">${r.email || '—'}</div></div>
+          <div class="detail-row"><div class="label">Guests</div><div class="value">${r.pax || 1}</div></div>
+          <div class="detail-row"><div class="label">Courses</div><div class="value">${courseDisplay || '—'}</div></div>
+          <div class="detail-row"><div class="label">Add-ons</div><div class="value">${addonsHTML || '—'}</div></div>
+          <div class="detail-row"><div class="label">Guest Names</div><div class="value">${guestNamesHTML || '—'}</div></div>
+          <div class="detail-row"><div class="label">Payment</div><div class="value">${r.paymentIntent ? 'Paid' : 'Unpaid'}</div></div>
+          <div class="detail-row"><div class="label">Notes</div><div class="value">${r.notes ? r.notes : '—'}</div></div>
+          <div style="text-align:right;margin-top:8px"><button onclick="copyEmail('${r.email}');event.stopPropagation()" style="background:none;border:1px solid var(--border);padding:6px 10px;border-radius:6px;color:var(--dim);cursor:pointer">Copy Email</button></div>
+        </div>`;
+
         if (hasNotes) {
           html += `<div class="notes-detail" id="notes-${i}-${sess.name.replace(/\s/g,'')}">📝 ${r.notes}</div>`;
         }
@@ -260,6 +297,16 @@ function render(avail, reservations) {
 
   document.getElementById('content').innerHTML = html;
 }
+
+function toggleDetail(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  // hide other panels
+  document.querySelectorAll('.detail-panel').forEach(d => { if (d.id !== id) d.classList.remove('show'); });
+  el.classList.toggle('show');
+}
+
+function copyEmail(e) { if (!e) return; navigator.clipboard && navigator.clipboard.writeText(e); alert('Email copied: ' + e); }
 
 // Init
 (async () => {
