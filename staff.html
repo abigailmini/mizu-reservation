@@ -256,7 +256,7 @@ function render(avail, reservations) {
           if (gnames && gnames.length) guestNamesHTML = gnames.map((n,idx)=>`${idx+1}. ${n}`).join('<br>');
         } catch(e) { guestNamesHTML = ''; }
 
-        html += `<div class="guest-row" onclick="toggleDetail('detail-${sess.name.replace(/\\s/g,'')}-${i}')" style="cursor:pointer">
+        html += `<div class="guest-row" data-detail-id="detail-${sess.name.replace(/\\s/g,'')}-${i}" style="cursor:pointer">
           <div class="guest-num">${i + 1}</div>
           <div class="guest-info">
             <div class="guest-name">${r.name || 'Guest'} <span style="color:var(--dim);font-size:0.78rem">×${r.pax || 1}</span></div>
