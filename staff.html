@@ -162,10 +162,8 @@
     <input type="hidden" id="editCreatedAt">
     <label>Guest Names (comma-separated)</label>
     <textarea id="editGuestNames" placeholder="John, Jane, Mike"></textarea>
-    <label>Notes</label>
-    <textarea id="editNotes" placeholder="Special requests, dietary needs..."></textarea>
-    <label>Allergy / Dietary</label>
-    <input type="text" id="editAllergy" placeholder="e.g. No shellfish, vegetarian">
+    <label>Dietary / Special Request</label>
+    <textarea id="editNotes" placeholder="No shellfish, birthday celebration..."></textarea>
     <label>Phone</label>
     <input type="text" id="editPhone">
     <label>Email</label>
@@ -178,8 +176,16 @@
       <div style="font-size:0.72rem;color:var(--dim);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em">Actions</div>
       <div class="modal-actions">
         <button class="btn-postpone" onclick="doAction('postpone')">📅 Postpone</button>
-        <button class="btn-cancel-booking" onclick="doAction('cancel')">❌ Cancel</button>
-        <button class="btn-charge" onclick="doAction('charge')">💳 Charge No-Show</button>
+        <button class="btn-cancel-booking" onclick="showCancelOptions()">❌ Cancel</button>
+      </div>
+      <!-- Cancel sub-options (hidden by default) -->
+      <div id="cancelOptions" style="display:none;margin-top:12px;padding:12px;background:rgba(184,84,80,0.05);border:1px solid rgba(184,84,80,0.15);border-radius:10px">
+        <div style="font-size:0.72rem;color:var(--red);margin-bottom:10px;font-weight:500">Cancel & charge deposit?</div>
+        <div class="modal-actions">
+          <button class="btn-charge" onclick="doAction('charge100')" style="flex:1">💳 100%</button>
+          <button class="btn-postpone" onclick="doAction('charge50')" style="flex:1">💳 50%</button>
+          <button onclick="doAction('cancel')" style="flex:1;color:var(--dim)">No Charge</button>
+        </div>
       </div>
     </div>
     <div class="modal-status" id="editStatus"></div>
@@ -315,25 +321,28 @@ function render(avail, reservations) {
           if (gnames && gnames.length) guestNamesHTML = gnames.map((n,idx)=>`${idx+1}. ${n}`).join('<br>');
         } catch(e) { guestNamesHTML = ''; }
 
+        // Parse guest names for inline display
+        let guestNamesInline = '';
+        try {
+          const gn = r.guestNames ? (typeof r.guestNames === 'string' ? JSON.parse(r.guestNames) : r.guestNames) : [];
+          if (gn && gn.length && gn.some(n=>n.trim())) guestNamesInline = gn.filter(n=>n.trim()).join(', ');
+        } catch(e) { guestNamesInline = r.guestNames || ''; }
+
         html += `<div class="guest-row" data-detail-id="detail-${sess.name.replace(/\\s/g,'')}-${i}" style="cursor:pointer">
           <div class="guest-num">${i + 1}</div>
           <div class="guest-info">
-            <div class="guest-name">${r.name || 'Guest'} <span style="color:var(--dim);font-size:0.78rem">×${r.pax || 1}</span></div>
-            <div class="guest-meta">
-              <span class="guest-course">${courseDisplay || '—'}</span>
-              <span class="guest-phone">${r.phone || ''}</span>
+            <div class="guest-name">${r.name || 'Guest'} <span style="color:var(--dim);font-size:0.78rem">×${r.pax || 1}</span>
+              <button class="tag" style="cursor:pointer;background:rgba(201,169,110,0.1);color:var(--gold);border:1px solid rgba(201,169,110,0.2);margin-left:6px;vertical-align:middle" onclick="event.stopPropagation();openEdit(${r._idx})">✏️</button>
             </div>
-            <div class="guest-inline-extra" style="margin-top:6px">
-              <div class="guest-names-inline" style="font-size:0.72rem;color:var(--dim)">${guestNamesHTML ? guestNamesHTML.replace(/<br>/g, ', ') : ''}</div>
-              ${r.allergy ? `<div style="font-size:0.72rem;color:var(--red);margin-top:4px">⚠ ${r.allergy}</div>` : ''}
-              <div class="guest-note-inline" style="font-size:0.72rem;color:var(--dim);margin-top:4px">${r.notes ? (r.notes.length>80 ? r.notes.substring(0,77)+'...' : r.notes) : ''}</div>
+            <div class="guest-detail-lines" style="margin-top:6px;font-size:0.75rem;line-height:1.6">
+              <div style="color:var(--gold)">${courseDisplay || '—'}</div>
+              ${guestNamesInline ? `<div style="color:var(--dim)">👤 ${guestNamesInline}</div>` : ''}
+              ${(r.notes || r.allergy) ? `<div style="color:${hasAllergy || r.allergy ? 'var(--red)' : 'var(--dim)'}">📝 ${r.allergy ? r.allergy + (r.notes ? ' · ' + r.notes : '') : r.notes}</div>` : ''}
+              <div style="color:var(--dim)">📞 ${r.phone || '—'}</div>
             </div>
           </div>
           <div class="guest-tags">
-            ${r.allergy ? '<span class="tag allergy">⚠ ALLERGY</span>' : (hasAllergy ? '<span class="tag allergy">⚠ ALLERGY</span>' : '')}
-            ${hasNotes && !hasAllergy ? '<span class="tag notes">📝 NOTE</span>' : ''}
             ${hasPaid ? '<span class="tag paid">💳</span>' : ''}
-            <button class="tag" style="cursor:pointer;background:rgba(201,169,110,0.1);color:var(--gold);border:1px solid rgba(201,169,110,0.2)" onclick="event.stopPropagation();openEdit(${r._idx})">✏️</button>
           </div>
         </div>`;
 
@@ -418,13 +427,20 @@ function openEdit(idx) {
   const r = _reservations[idx];
   if (!r) return;
   document.getElementById('editCreatedAt').value = r.createdAt || '';
-  document.getElementById('editGuestNames').value = r.guestNames || '';
+  // Parse guestNames if JSON array
+  let gn = r.guestNames || '';
+  try { const arr = JSON.parse(gn); if (Array.isArray(arr)) gn = arr.filter(n=>n.trim()).join(', '); } catch(e) {}
+  document.getElementById('editGuestNames').value = gn;
   document.getElementById('editNotes').value = r.notes || '';
-  document.getElementById('editAllergy').value = r.allergy || '';
   document.getElementById('editPhone').value = r.phone || '';
   document.getElementById('editEmail').value = r.email || '';
   document.getElementById('editStatus').textContent = '';
+  document.getElementById('cancelOptions').style.display = 'none';
   document.getElementById('editModal').classList.add('show');
+}
+
+function showCancelOptions() {
+  document.getElementById('cancelOptions').style.display = 'block';
 }
 
 function closeModal() {
@@ -439,7 +455,6 @@ async function saveEdit() {
     createdAt: document.getElementById('editCreatedAt').value,
     guestNames: document.getElementById('editGuestNames').value,
     notes: document.getElementById('editNotes').value,
-    allergy: document.getElementById('editAllergy').value,
     phone: document.getElementById('editPhone').value,
     email: document.getElementById('editEmail').value
   };
@@ -467,7 +482,7 @@ async function saveEdit() {
 async function doAction(act) {
   const createdAt = document.getElementById('editCreatedAt').value;
   if (!createdAt) return;
-  const labels = { cancel: 'Cancel this booking?', postpone: 'Postpone this booking?', charge: 'Charge no-show fee?' };
+  const labels = { cancel: 'Cancel with no charge?', postpone: 'Postpone this booking?', charge100: 'Charge 100% deposit?', charge50: 'Charge 50% deposit?' };
   if (!confirm(labels[act] || `Perform ${act}?`)) return;
   const status = document.getElementById('editStatus');
   status.textContent = 'Processing...';
