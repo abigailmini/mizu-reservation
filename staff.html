@@ -101,6 +101,19 @@
   /* Empty state */
   .empty-session { padding: 24px 16px; text-align: center; color: var(--dim); font-size: 0.85rem; }
 
+  /* Status badges */
+  .status-badge { font-size:0.6rem; padding:3px 8px; border-radius:4px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; display:inline-block; margin-left:6px; vertical-align:middle; }
+  .status-confirmed { background:rgba(91,138,106,0.15); color:var(--green); border:1px solid rgba(91,138,106,0.25); }
+  .status-manual { background:rgba(91,126,166,0.12); color:var(--blue); border:1px solid rgba(91,126,166,0.2); }
+  .status-cancelled { background:rgba(184,84,80,0.15); color:var(--red); border:1px solid rgba(184,84,80,0.25); }
+  .status-postponed { background:rgba(201,169,110,0.12); color:var(--gold); border:1px solid rgba(201,169,110,0.2); }
+  .status-charged { background:rgba(184,84,80,0.2); color:var(--red); border:1px solid rgba(184,84,80,0.3); }
+  .guest-row.cancelled { opacity:0.45; }
+
+  /* Add manually button */
+  .add-manual-btn { display:inline-flex; align-items:center; gap:6px; background:none; border:1px solid var(--border); color:var(--gold); padding:8px 16px; border-radius:8px; cursor:pointer; font-family:inherit; font-size:0.78rem; font-weight:500; transition:all 150ms; margin-bottom:16px; }
+  .add-manual-btn:hover { border-color:var(--gold-dim); background:rgba(201,169,110,0.05); }
+
   /* Edit Modal */
   .modal-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); z-index:100; align-items:center; justify-content:center; padding:16px; }
   .modal-overlay.show { display:flex; }
@@ -148,6 +161,7 @@
 
 <div class="container">
   <div class="stats-bar" id="statsBar"></div>
+  <button class="add-manual-btn" onclick="openManualAdd()">＋ Add Manually</button>
   <div id="content"><div class="loading">Loading reservations...</div></div>
   <div class="refresh-bar">
     <button onclick="loadData()">↻ Refresh</button>
@@ -189,6 +203,42 @@
       </div>
     </div>
     <div class="modal-status" id="editStatus"></div>
+  </div>
+</div>
+
+<!-- Manual Add Modal -->
+<div class="modal-overlay" id="manualModal">
+  <div class="modal">
+    <h3>＋ Manual Booking</h3>
+    <label>Session</label>
+    <select id="manualSession" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:inherit;font-size:0.85rem">
+      <option value="Lunch">Lunch (12:00 PM — 2:00 PM)</option>
+      <option value="Dinner 1">Dinner 1 (6:00 PM — 8:00 PM)</option>
+      <option value="Dinner 2">Dinner 2 (8:30 PM — 10:30 PM)</option>
+    </select>
+    <label>Guest Name</label>
+    <input type="text" id="manualName" placeholder="Full name">
+    <label>Phone</label>
+    <input type="text" id="manualPhone" placeholder="+60...">
+    <label>Email</label>
+    <input type="text" id="manualEmail" placeholder="email@example.com">
+    <label>Pax</label>
+    <input type="number" id="manualPax" value="2" min="1" max="20">
+    <label>Course</label>
+    <select id="manualCourse" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:inherit;font-size:0.85rem">
+      <option value="Mirin Course">Mirin Course (RM199)</option>
+      <option value="Kirin Course">Kirin Course (RM299)</option>
+      <option value="Uni Tasting Menu">Uni Tasting Menu (RM399)</option>
+    </select>
+    <label>Guest Names (comma-separated, optional)</label>
+    <textarea id="manualGuestNames" placeholder="Alice, Bob"></textarea>
+    <label>Dietary / Special Request</label>
+    <textarea id="manualNotes" placeholder="No shellfish, birthday..."></textarea>
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="btn-save" onclick="submitManual()">✅ Confirm Booking</button>
+      <button onclick="closeManualModal()">✕ Close</button>
+    </div>
+    <div class="modal-status" id="manualStatus"></div>
   </div>
 </div>
 
@@ -246,8 +296,10 @@ async function loadData() {
 function render(avail, reservations) {
   _reservations = []; // Reset for fresh render
 
-  // Stats
-  const totalGuests = reservations.reduce((s, r) => s + (parseInt(r.pax) || 0), 0);
+  // Stats — only count active bookings (not cancelled/postponed) for capacity
+  const activeStatuses = ['confirmed', 'manual'];
+  const activeRes = reservations.filter(r => activeStatuses.includes(r.status));
+  const totalGuests = activeRes.reduce((s, r) => s + (parseInt(r.pax) || 0), 0);
   const totalBookings = reservations.length;
   const totalSeats = SESSIONS.reduce((s, sess) => s + sess.max, 0);
   const allergyCount = reservations.filter(r => r.notes && /allerg|diet|vegetar|vegan|halal|no\s*(pork|beef|shell|nut|gluten|dairy|seafood|alcohol)/i.test(r.notes)).length;
@@ -263,7 +315,8 @@ function render(avail, reservations) {
   let html = '';
   SESSIONS.forEach(sess => {
     const sessRes = reservations.filter(r => r.session === sess.name);
-    const bookedPax = sessRes.reduce((s, r) => s + (parseInt(r.pax) || 0), 0);
+    const activeSessRes = sessRes.filter(r => activeStatuses.includes(r.status));
+    const bookedPax = activeSessRes.reduce((s, r) => s + (parseInt(r.pax) || 0), 0);
     const pct = Math.round((bookedPax / sess.max) * 100);
     const fillClass = pct >= 90 ? 'red' : pct >= 50 ? 'yellow' : 'green';
 
@@ -328,10 +381,16 @@ function render(avail, reservations) {
           if (gn && gn.length && gn.some(n=>n.trim())) guestNamesInline = gn.filter(n=>n.trim()).join(', ');
         } catch(e) { guestNamesInline = r.guestNames || ''; }
 
-        html += `<div class="guest-row" data-detail-id="detail-${sess.name.replace(/\\s/g,'')}-${i}" style="cursor:pointer">
+        // Status badge
+        const isCancelled = ['cancelled','postponed','charged-50%','charged-100%'].includes(r.status);
+        const statusClass = r.status === 'confirmed' ? 'status-confirmed' : r.status === 'manual' ? 'status-manual' : r.status === 'cancelled' ? 'status-cancelled' : r.status === 'postponed' ? 'status-postponed' : r.status?.startsWith('charged') ? 'status-charged' : 'status-confirmed';
+        const statusLabel = r.status === 'confirmed' ? 'Confirmed' : r.status === 'manual' ? 'Manual Confirm' : r.status === 'cancelled' ? 'Cancelled' : r.status === 'postponed' ? 'Postponed' : r.status === 'charged-50%' ? 'Charged 50%' : r.status === 'charged-100%' ? 'Charged 100%' : r.status || 'Confirmed';
+
+        html += `<div class="guest-row ${isCancelled ? 'cancelled' : ''}" data-detail-id="detail-${sess.name.replace(/\\s/g,'')}-${i}" style="cursor:pointer">
           <div class="guest-num">${i + 1}</div>
           <div class="guest-info">
             <div class="guest-name">${r.name || 'Guest'} <span style="color:var(--dim);font-size:0.78rem">×${r.pax || 1}</span>
+              <span class="status-badge ${statusClass}">${statusLabel}</span>
               <button class="tag" style="cursor:pointer;background:rgba(201,169,110,0.1);color:var(--gold);border:1px solid rgba(201,169,110,0.2);margin-left:6px;vertical-align:middle" onclick="event.stopPropagation();openEdit(${r._idx})">✏️</button>
             </div>
             <div class="guest-detail-lines" style="margin-top:6px;font-size:0.75rem;line-height:1.6">
@@ -512,6 +571,59 @@ async function doAction(act) {
 document.getElementById('editModal').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
 });
+document.getElementById('manualModal').addEventListener('click', function(e) {
+  if (e.target === this) closeManualModal();
+});
+
+// ── Manual Add Functions ──
+function openManualAdd() {
+  document.getElementById('manualName').value = '';
+  document.getElementById('manualPhone').value = '';
+  document.getElementById('manualEmail').value = '';
+  document.getElementById('manualPax').value = '2';
+  document.getElementById('manualGuestNames').value = '';
+  document.getElementById('manualNotes').value = '';
+  document.getElementById('manualStatus').textContent = '';
+  document.getElementById('manualModal').classList.add('show');
+}
+
+function closeManualModal() {
+  document.getElementById('manualModal').classList.remove('show');
+}
+
+async function submitManual() {
+  const status = document.getElementById('manualStatus');
+  const name = document.getElementById('manualName').value.trim();
+  if (!name) { status.textContent = '❌ Name is required'; status.style.color = 'var(--red)'; return; }
+  status.textContent = 'Saving...'; status.style.color = 'var(--gold)';
+  const payload = {
+    date: dateStr(currentDate),
+    session: document.getElementById('manualSession').value,
+    course: document.getElementById('manualCourse').value,
+    name,
+    phone: document.getElementById('manualPhone').value.trim(),
+    email: document.getElementById('manualEmail').value.trim(),
+    pax: parseInt(document.getElementById('manualPax').value) || 2,
+    guestNames: document.getElementById('manualGuestNames').value.trim(),
+    notes: document.getElementById('manualNotes').value.trim()
+  };
+  try {
+    const r = await fetch(`${API_BASE}/staff/manual-book`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
+      body: JSON.stringify(payload)
+    });
+    const data = await r.json();
+    if (data.success) {
+      status.textContent = '✅ Booking added!'; status.style.color = 'var(--green)';
+      setTimeout(() => { closeManualModal(); loadData(); }, 800);
+    } else {
+      status.textContent = '❌ ' + (data.error || 'Failed'); status.style.color = 'var(--red)';
+    }
+  } catch(e) {
+    status.textContent = '❌ Network error'; status.style.color = 'var(--red)';
+  }
+}
 </script>
 </body>
 </html>
