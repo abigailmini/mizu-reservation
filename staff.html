@@ -192,6 +192,8 @@ const FALLBACK_API = 'https://dam-attachments-inline-horizontal.trycloudflare.co
 let API_BASE = (location.hostname === 'localhost' || location.hostname.endsWith('.trycloudflare.com')) ? location.origin : FALLBACK_API;
 // v2 cache bust
 
+let _reservations = []; // Global store for edit modal
+
 const SESSIONS = [
   { name: 'Lunch', time: '12:00 PM — 2:00 PM', max: 20 },
   { name: 'Dinner 1', time: '6:00 PM — 8:00 PM', max: 20 },
@@ -236,6 +238,8 @@ async function loadData() {
 }
 
 function render(avail, reservations) {
+  _reservations = []; // Reset for fresh render
+
   // Stats
   const totalGuests = reservations.reduce((s, r) => s + (parseInt(r.pax) || 0), 0);
   const totalBookings = reservations.length;
@@ -282,6 +286,9 @@ function render(avail, reservations) {
       html += `</div>`;
     }
 
+    // Store session reservations in global array for edit modal
+    sessRes.forEach(r => { r._idx = _reservations.length; _reservations.push(r); });
+
     if (sessRes.length === 0) {
       html += `<div class="empty-session">No reservations yet</div>`;
     } else {
@@ -326,7 +333,7 @@ function render(avail, reservations) {
             ${r.allergy ? '<span class="tag allergy">⚠ ALLERGY</span>' : (hasAllergy ? '<span class="tag allergy">⚠ ALLERGY</span>' : '')}
             ${hasNotes && !hasAllergy ? '<span class="tag notes">📝 NOTE</span>' : ''}
             ${hasPaid ? '<span class="tag paid">💳</span>' : ''}
-            <button class="tag" style="cursor:pointer;background:rgba(201,169,110,0.1);color:var(--gold);border:1px solid rgba(201,169,110,0.2)" onclick="event.stopPropagation();openEdit(${JSON.stringify(JSON.stringify(r))})">✏️</button>
+            <button class="tag" style="cursor:pointer;background:rgba(201,169,110,0.1);color:var(--gold);border:1px solid rgba(201,169,110,0.2)" onclick="event.stopPropagation();openEdit(${r._idx})">✏️</button>
           </div>
         </div>`;
 
@@ -407,8 +414,9 @@ document.getElementById('content').addEventListener('click', function(e){
 })();
 
 // ── Edit Modal Functions ──
-function openEdit(rJson) {
-  const r = JSON.parse(rJson);
+function openEdit(idx) {
+  const r = _reservations[idx];
+  if (!r) return;
   document.getElementById('editCreatedAt').value = r.createdAt || '';
   document.getElementById('editGuestNames').value = r.guestNames || '';
   document.getElementById('editNotes').value = r.notes || '';
