@@ -427,8 +427,12 @@
     <div id="guestNamesList" style="display:flex;flex-direction:column;gap:8px"></div>
 
     <div class="form-group">
-      <label>Special Requests</label>
-      <textarea id="guestNotes" placeholder="Allergies, celebrations, dietary requirements..."></textarea>
+      <label>Allergy / Dietary Requirements</label>
+      <textarea id="guestAllergy" placeholder="e.g. No shellfish, vegetarian, halal, no pork..." rows="2"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Special Requests / Notes</label>
+      <textarea id="guestNotes" placeholder="Birthday celebration, special occasion, seating preference..."></textarea>
     </div>
     <!-- T&C -->
     <div class="tnc-section">
@@ -950,6 +954,7 @@ async function processPayment() {
     const phone = document.getElementById('guestPhone').value.trim();
     const email = document.getElementById('guestEmail').value.trim();
     const notes = document.getElementById('guestNotes').value.trim();
+    const allergy = (document.getElementById('guestAllergy') && document.getElementById('guestAllergy').value.trim()) || '';
 
     // Create payment method
     const pmResult = await stripe.createPaymentMethod({
@@ -973,7 +978,7 @@ async function processPayment() {
       headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
       body: JSON.stringify({
         date: selectedDate, session: selectedSession.name, course: selectedCourse,
-        name, phone, email, pax: selectedPax, notes,
+        name, phone, email, pax: selectedPax, notes, allergy,
         createHold: true, payment_method: pmResult.paymentMethod.id,
         addons: JSON.stringify(addons), guestNames: JSON.stringify(guestNames),
         return_url: window.location.origin + window.location.pathname + '?payment_status=complete'
@@ -1004,6 +1009,7 @@ async function submitWaitlist() {
   const phone = document.getElementById('guestPhone').value.trim();
   const email = document.getElementById('guestEmail').value.trim();
   const notes = document.getElementById('guestNotes').value.trim();
+  const allergy = (document.getElementById('guestAllergy') && document.getElementById('guestAllergy').value.trim()) || '';
   const btn = document.getElementById('step3Next');
   btn.disabled = true; btn.textContent = 'Submitting...';
 
@@ -1019,7 +1025,7 @@ async function submitWaitlist() {
     const res = await fetch(`${API_BASE}/waitlist`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
-      body: JSON.stringify({ date: selectedDate, session: selectedSession.name, course: selectedCourse, name, phone, email, pax: selectedPax, notes, addons: JSON.stringify(addons), guestNames: JSON.stringify(guestNames) })
+      body: JSON.stringify({ date: selectedDate, session: selectedSession.name, course: selectedCourse, name, phone, email, pax: selectedPax, notes, allergy, addons: JSON.stringify(addons), guestNames: JSON.stringify(guestNames) })
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
